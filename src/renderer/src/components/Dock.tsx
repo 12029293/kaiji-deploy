@@ -135,7 +135,7 @@ export default function Dock(): JSX.Element {
               type="checkbox"
               checked={allPageSelected}
               onChange={(e) => setSelection(pageIds, e.target.checked)}
-              style={{ accentColor: '#22D3EE' }}
+              style={{ accentColor: '#2E7FC4' }}
             />
             全选本页
           </label>

@@ -69,8 +69,35 @@ export default function OverviewPage(): JSX.Element {
     { label: '桌面路径', value: info?.desktopPath ?? '-', tone: 'text-white' }
   ]
 
+  /* 三个软件类模块的整体完成度（Hero 用） */
+  const overall = (() => {
+    const parts = MODULES.map((m) => categorySummary(m.category))
+    const total = parts.reduce((n, p) => n + p.total, 0)
+    const success = parts.reduce((n, p) => n + p.success, 0)
+    return total ? Math.round((success / total) * 100) : 0
+  })()
+
   return (
     <div className="kd-fade-in mx-auto max-w-[1400px] space-y-4">
+      {/* Hero：钢蓝横幅（概念稿色彩锚点） */}
+      <div className="kd-hero">
+        <div className="min-w-0 flex-1">
+          <h2>一键部署，装机即用</h2>
+          <p>勾选要安装的软件与要做的系统设置，交给部署控制台批量执行。</p>
+        </div>
+        <div className="shrink-0 text-right">
+          <div className="kd-num pct">
+            {overall}
+            <small>%</small>
+          </div>
+          <div className="text-[11px] text-dim">整体完成度</div>
+        </div>
+        <Link to="/daily" className="kd-hero-cta">
+          开始部署
+          <Icon name="chevronR" size={14} />
+        </Link>
+      </div>
+
       {/* 系统信息 */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {tiles.map((t) => (
@@ -105,7 +132,7 @@ export default function OverviewPage(): JSX.Element {
                   className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-[11px] text-white"
                   style={{
                     background:
-                      'linear-gradient(135deg,rgba(34,211,238,.25),rgba(99,102,241,.25))',
+                      'linear-gradient(135deg,rgba(143,182,224,.3),rgba(46,127,196,.32))',
                     border: '1px solid var(--kd-line-strong)'
                   }}
                 >

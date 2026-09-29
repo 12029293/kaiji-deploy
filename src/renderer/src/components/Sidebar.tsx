@@ -1,6 +1,6 @@
 /**
  * 左侧导航（7 模块）：品牌区 + 导航项（含软件项计数）+ 底部收起。
- * 视觉对齐原型 nav：深海军蓝玻璃、激活项左侧渐变竖条、可折叠为 64px 图标栏。
+ * 视觉对齐概念稿：板岩蓝白霜玻璃、激活项深海军蓝药丸 + 渐变竖条、可折叠。
  */
 import { NavLink } from 'react-router-dom'
 import { Icon } from './Icons'
@@ -18,27 +18,30 @@ export default function Sidebar(): JSX.Element {
 
   return (
     <nav
-      className={`flex shrink-0 flex-col overflow-hidden border-r border-white/[0.06] transition-[width] duration-300 ${
+      className={`flex shrink-0 flex-col overflow-hidden border-r border-white/[0.07] transition-[width] duration-300 ${
         collapsed ? 'w-16' : 'w-[212px]'
       }`}
-      style={{ background: 'rgba(11,18,32,.72)', backdropFilter: 'blur(14px)' }}
+      style={{
+        background: 'rgba(13, 22, 31, 0.55)',
+        backdropFilter: 'blur(30px) saturate(1.6)'
+      }}
     >
       <div className="flex items-center gap-[10px] px-3.5 pb-3.5 pt-4">
         <div
-          className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-[10px] text-white"
+          className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-[10px] text-[#0A1522]"
           style={{
             background: 'var(--kd-grad)',
-            boxShadow: '0 4px 14px rgba(34,211,238,.35)'
+            boxShadow: '0 4px 14px rgba(46,127,196,.5), inset 0 1px 0 rgba(255,255,255,.35)'
           }}
         >
-          <Icon name="logo" size={20} strokeWidth={1.7} />
+          <Icon name="logo" size={20} strokeWidth={1.9} />
         </div>
         {!collapsed && (
           <div className="min-w-0">
             <h1 className="truncate text-[15px] font-semibold tracking-[.02em] text-white">
               开机部署助手
             </h1>
-            <p className="-mt-[3px] truncate text-[11px] text-dim">部署控制台 v1.0</p>
+            <p className="-mt-[3px] truncate text-[11px] text-dim">部署控制台 v1.1</p>
           </div>
         )}
       </div>

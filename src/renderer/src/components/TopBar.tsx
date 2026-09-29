@@ -87,7 +87,7 @@ export default function TopBar(): JSX.Element {
   return (
     <header
       className="flex shrink-0 items-center gap-3.5 border-b border-white/[0.06] px-[22px] py-3.5"
-      style={{ background: 'rgba(11,18,32,.6)', backdropFilter: 'blur(14px)' }}
+      style={{ background: 'rgba(13, 22, 31, 0.6)', backdropFilter: 'blur(30px) saturate(1.6)' }}
     >
       <div className="min-w-0">
         <h2 className="truncate text-[15px] font-semibold tracking-[.02em] text-white">

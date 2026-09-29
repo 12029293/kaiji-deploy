@@ -16,13 +16,13 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-# 与应用主界面一致的深色配色（dark navy + 青/靛渐变强调色）
-BG_TOP = (11, 18, 32)        # #0B1220
-BG_BOTTOM = (24, 34, 58)     # #18223A
-ACCENT_A = (34, 211, 238)    # #22D3EE cyan
-ACCENT_B = (99, 102, 241)    # #6366F1 indigo
+# 与应用主界面一致的深色配色（板岩蓝氛围 + 钢蓝强调色）
+BG_TOP = (24, 34, 47)        # #18222F 板岩蓝
+BG_BOTTOM = (18, 40, 53)     # #122835
+ACCENT_A = (143, 182, 224)   # #8FB6E0 柔蓝
+ACCENT_B = (46, 127, 196)    # #2E7FC4 钢蓝
 TEXT_MAIN = (255, 255, 255)
-TEXT_SUB = (148, 163, 184)   # #94A3B8
+TEXT_SUB = (159, 180, 196)   # #9FB4C4
 
 FONT_REG = r"C:\Windows\Fonts\msyh.ttc"
 FONT_BOLD = r"C:\Windows\Fonts\msyhbd.ttc"

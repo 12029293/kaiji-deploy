@@ -108,7 +108,7 @@ function createWindow(): void {
     minWidth: 1080,
     minHeight: 700,
     show: false,
-    backgroundColor: '#0B1220',
+    backgroundColor: '#182835',
     title: '开机部署助手',
     autoHideMenuBar: true,
     webPreferences: {

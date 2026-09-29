@@ -4,31 +4,33 @@
 
 /* ============================================================
    开机部署助手 · 部署控制台
-   设计语言：深海军蓝玻璃拟态 + 青→靛渐变强调 + 状态机微动效
-   令牌与主界面交互原型（console-mockup.html）1:1 对齐
+   设计语言：玻璃拟态 · 板岩蓝冷调（docs/ui-concept 概念稿对齐）
+   板岩蓝氛围底 + 白霜玻璃(blur 30px saturate 1.6) + 钢蓝 #2E7FC4 单一强调
+   令牌与概念稿（开机部署助手-UI概念-玻璃版.html）1:1 对齐
    ============================================================ */
 :root {
-  --kd-bg: #0b1220;
-  --kd-panel: rgba(17, 24, 39, 0.7);
-  --kd-panel-solid: #111827;
-  --kd-line: rgba(255, 255, 255, 0.06);
-  --kd-line-strong: rgba(255, 255, 255, 0.12);
-  --kd-txt: #e5e7eb;
-  --kd-sub: #94a3b8;
-  --kd-dim: #64748b;
-  --kd-cyan: #22d3ee;
-  --kd-indigo: #6366f1;
-  --kd-grad: linear-gradient(135deg, #22d3ee 0%, #6366f1 100%);
-  --kd-ok: #34d399;
+  --kd-bg: #101b24;
+  --kd-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.04));
+  --kd-panel-solid: #16232e;
+  --kd-line: rgba(255, 255, 255, 0.09);
+  --kd-line-strong: rgba(255, 255, 255, 0.15);
+  --kd-txt: #f2f6fa;
+  --kd-sub: #9fb4c4;
+  --kd-dim: #6c8496;
+  --kd-cyan: #2e7fc4;
+  --kd-indigo: #8fb6e0;
+  --kd-grad: linear-gradient(135deg, #8fb6e0 0%, #2e7fc4 55%, #235f93 100%);
+  --kd-ok: #4fd6bc;
   --kd-err: #f87171;
-  --kd-warn: #fbbf24;
+  --kd-warn: #f5b954;
   --kd-r: 16px;
   --kd-t: 150ms;
   --kd-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --kd-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.35);
   --kd-shadow-2: 0 8px 28px rgba(0, 0, 0, 0.45);
   --kd-shadow-glow:
-    0 0 0 1px rgba(34, 211, 238, 0.35), 0 6px 24px rgba(34, 211, 238, 0.14);
+    0 0 0 1px rgba(46, 127, 196, 0.38), 0 6px 24px rgba(46, 127, 196, 0.15);
+  --kd-glass-filter: blur(30px) saturate(1.6);
 }
 
 html,
@@ -39,8 +41,12 @@ body,
 
 body {
   margin: 0;
-  background: var(--kd-bg);
   color: var(--kd-txt);
+  background:
+    radial-gradient(1100px 620px at 6% -12%, rgba(103, 133, 148, 0.2) 0%, rgba(103, 133, 148, 0) 58%),
+    radial-gradient(820px 560px at 96% 2%, rgba(46, 127, 196, 0.16) 0%, rgba(46, 127, 196, 0) 60%),
+    radial-gradient(1300px 900px at 70% 118%, rgba(16, 35, 50, 0.85) 0%, rgba(16, 35, 50, 0) 62%),
+    linear-gradient(158deg, #22333f 0%, #182835 45%, #121d27 100%);
   font-family: 'Microsoft YaHei UI', 'Segoe UI', system-ui, sans-serif;
   font-size: 13px;
   line-height: 1.6;
@@ -50,7 +56,7 @@ body {
 }
 
 ::selection {
-  background: rgba(34, 211, 238, 0.25);
+  background: rgba(46, 127, 196, 0.32);
 }
 
 button {
@@ -65,20 +71,20 @@ button:disabled {
 }
 button:focus-visible,
 .kd-switch:focus-visible {
-  outline: 2px solid var(--kd-cyan);
+  outline: 2px solid var(--kd-indigo);
   outline-offset: 2px;
   border-radius: 8px;
 }
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid rgba(34, 211, 238, 0.6);
+  outline: 2px solid rgba(46, 127, 196, 0.7);
   outline-offset: 1px;
 }
 svg {
   display: block;
 }
 
-/* ---------- 背景光斑 ---------- */
+/* ---------- 背景光斑（板岩蓝氛围） ---------- */
 .kd-blobs {
   position: fixed;
   inset: 0;
@@ -97,14 +103,14 @@ svg {
   height: 720px;
   left: -180px;
   top: -220px;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.08), transparent 65%);
+  background: radial-gradient(circle, rgba(143, 182, 224, 0.09), transparent 65%);
 }
 .kd-blobs::after {
   width: 860px;
   height: 860px;
   right: -240px;
   bottom: -260px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.08), transparent 65%);
+  background: radial-gradient(circle, rgba(46, 127, 196, 0.1), transparent 65%);
 }
 
 /* ---------- 滚动条 ---------- */
@@ -132,12 +138,12 @@ svg {
   .kd-glass {
     background: var(--kd-panel);
     border: 1px solid var(--kd-line);
-    backdrop-filter: blur(12px);
+    backdrop-filter: var(--kd-glass-filter);
   }
   .kd-glass-strong {
-    background: rgba(17, 24, 39, 0.8);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.055));
     border: 1px solid var(--kd-line-strong);
-    backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: var(--kd-glass-filter);
   }
 
   /* ---------- 按钮 ---------- */
@@ -157,7 +163,8 @@ svg {
   }
   .kd-btn-primary {
     background: var(--kd-grad);
-    box-shadow: 0 6px 20px rgba(34, 211, 238, 0.35);
+    color: var(--kd-navy, #0a1522);
+    box-shadow: 0 6px 20px rgba(46, 127, 196, 0.4);
   }
   .kd-btn-primary:hover:not(:disabled) {
     filter: brightness(1.08);
@@ -205,7 +212,7 @@ svg {
   }
   .kd-mini-btn:hover:not(:disabled) {
     color: #fff;
-    border-color: rgba(34, 211, 238, 0.5);
+    border-color: rgba(46, 127, 196, 0.6);
     transform: translateY(-1px);
   }
   .kd-mini-btn:disabled {
@@ -256,8 +263,9 @@ svg {
     color: var(--kd-txt);
   }
   .kd-nav-item.active {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.06);
+    color: var(--kd-txt);
+    background: rgba(10, 21, 34, 0.82);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
   .kd-nav-item.active::before {
     content: '';
@@ -282,7 +290,7 @@ svg {
     border-radius: var(--kd-r);
     background: var(--kd-panel);
     border: 1px solid var(--kd-line);
-    backdrop-filter: blur(12px);
+    backdrop-filter: var(--kd-glass-filter);
     padding: 14px 14px 12px;
     box-shadow: var(--kd-shadow-1);
     transition:
@@ -292,11 +300,11 @@ svg {
   }
   .kd-appcard:hover {
     transform: translateY(-2px);
-    border-color: rgba(34, 211, 238, 0.45);
+    border-color: rgba(46, 127, 196, 0.5);
     box-shadow: var(--kd-shadow-glow);
   }
   .kd-appcard.selected {
-    border-color: rgba(34, 211, 238, 0.6);
+    border-color: rgba(46, 127, 196, 0.65);
     box-shadow: var(--kd-shadow-glow);
   }
   .kd-appcard.st-success {
@@ -314,7 +322,7 @@ svg {
     border-radius: var(--kd-r);
     background: var(--kd-panel);
     border: 1px solid var(--kd-line);
-    backdrop-filter: blur(12px);
+    backdrop-filter: var(--kd-glass-filter);
     padding: 18px;
     box-shadow: var(--kd-shadow-1);
   }
@@ -326,7 +334,7 @@ svg {
   }
   .kd-card-hover:hover {
     transform: translateY(-2px);
-    border-color: rgba(34, 211, 238, 0.45);
+    border-color: rgba(46, 127, 196, 0.5);
     box-shadow: var(--kd-shadow-glow);
   }
   .kd-tool-row {
@@ -360,10 +368,10 @@ svg {
   border: 1.5px solid var(--kd-line-strong);
   display: grid;
   place-items: center;
-  color: #fff;
+  color: #0a1522;
   transition: all var(--kd-t);
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
 }
 .kd-sel .box svg {
   opacity: 0;
@@ -371,11 +379,11 @@ svg {
   transition: all var(--kd-t);
 }
 .kd-sel input:focus-visible + .box {
-  outline: 2px solid var(--kd-cyan);
+  outline: 2px solid var(--kd-indigo);
   outline-offset: 2px;
 }
 .kd-sel input:checked + .box {
-  background: var(--kd-grad);
+  background: linear-gradient(135deg, #8fb6e0, #2e7fc4);
   border-color: transparent;
   animation: kd-pop 0.35s var(--kd-ease);
 }
@@ -390,14 +398,14 @@ svg {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--kd-grad);
+  background: linear-gradient(135deg, #8fb6e0, #2e7fc4);
   display: grid;
   place-items: center;
-  color: #fff;
+  color: #0a1522;
   opacity: 0;
   transform: scale(0.4);
   transition: all 0.25s var(--kd-ease);
-  box-shadow: 0 3px 10px rgba(34, 211, 238, 0.4);
+  box-shadow: 0 3px 10px rgba(46, 127, 196, 0.45);
   pointer-events: none;
 }
 .kd-appcard.selected .kd-corner {
@@ -467,8 +475,8 @@ svg {
   flex: 0 0 auto;
 }
 .kd-pill.c-ok {
-  color: #a7f3d0;
-  border-color: rgba(52, 211, 153, 0.3);
+  color: #a9efe0;
+  border-color: rgba(79, 214, 188, 0.32);
 }
 .kd-pill.c-ok i {
   background: var(--kd-ok);
@@ -488,11 +496,11 @@ svg {
   background: var(--kd-warn);
 }
 .kd-pill.c-run {
-  color: #a5f3fc;
-  border-color: rgba(34, 211, 238, 0.3);
+  color: #bcd9f2;
+  border-color: rgba(46, 127, 196, 0.42);
 }
 .kd-pill.c-run i {
-  background: var(--kd-cyan);
+  background: var(--kd-indigo);
   animation: kd-blink 1s infinite;
 }
 
@@ -503,7 +511,7 @@ svg {
   border-radius: 50%;
   flex: 0 0 auto;
   border: 2px solid rgba(255, 255, 255, 0.15);
-  border-top-color: var(--kd-cyan);
+  border-top-color: var(--kd-indigo);
   animation: kd-rot 0.7s linear infinite;
 }
 .kd-ring {
@@ -518,10 +526,10 @@ svg {
   stroke-linecap: round;
 }
 .kd-ring .bg {
-  stroke: rgba(255, 255, 255, 0.08);
+  stroke: rgba(255, 255, 255, 0.1);
 }
 .kd-ring .fg {
-  stroke: #22d3ee;
+  stroke: #8fb6e0;
   transition: stroke-dashoffset 0.14s linear;
 }
 .kd-bar {
@@ -553,7 +561,7 @@ svg {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid var(--kd-cyan);
+  border: 2px solid var(--kd-indigo);
   animation: kd-pl 1.2s var(--kd-ease) infinite;
 }
 .kd-pulse::after {
@@ -600,7 +608,7 @@ svg {
   background: linear-gradient(
     100deg,
     transparent 30%,
-    rgba(34, 211, 238, 0.22) 50%,
+    rgba(143, 182, 224, 0.28) 50%,
     transparent 70%
   );
   background-size: 220% 100%;
@@ -627,9 +635,9 @@ svg {
   gap: 16px;
   padding: 12px 18px;
   border-radius: 20px;
-  background: rgba(17, 24, 39, 0.66);
+  background: rgba(13, 22, 31, 0.66);
   border: 1px solid var(--kd-line-strong);
-  backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: var(--kd-glass-filter);
   box-shadow: var(--kd-shadow-2);
 }
 .kd-dock .kd-ring {
@@ -647,10 +655,10 @@ svg {
   width: min(1060px, calc(100vw - 48px));
   height: 300px;
   border-radius: 18px 18px 0 0;
-  background: rgba(11, 18, 32, 0.94);
+  background: rgba(13, 21, 29, 0.94);
   border: 1px solid var(--kd-line-strong);
   border-bottom: 0;
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(30px) saturate(1.6);
   box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.5);
   transition: transform 0.32s var(--kd-ease);
   display: flex;
@@ -707,9 +715,9 @@ svg {
   max-width: 360px;
   padding: 11px 14px;
   border-radius: 14px;
-  background: rgba(17, 24, 39, 0.92);
+  background: rgba(15, 25, 34, 0.92);
   border: 1px solid var(--kd-line-strong);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(30px) saturate(1.6);
   box-shadow: var(--kd-shadow-2);
   font-size: 12.5px;
   color: var(--kd-txt);
@@ -750,6 +758,77 @@ svg {
   transition:
     opacity 0.3s,
     transform 0.3s;
+}
+
+/* ---------- Hero 钢蓝横幅（概念稿色彩锚点） ---------- */
+.kd-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--kd-r);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(120% 190% at 8% -10%, rgba(143, 182, 224, 0.3) 0%, transparent 55%),
+    linear-gradient(120deg, rgba(35, 95, 147, 0.55) 0%, rgba(46, 127, 196, 0.32) 55%, rgba(143, 182, 224, 0.1) 100%);
+  backdrop-filter: var(--kd-glass-filter);
+  box-shadow: var(--kd-shadow-1), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  padding: 20px 26px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.kd-hero::after {
+  content: '';
+  position: absolute;
+  right: -60px;
+  top: -80px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(143, 182, 224, 0.22), transparent 66%);
+  pointer-events: none;
+}
+.kd-hero h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--kd-txt);
+}
+.kd-hero p {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--kd-sub);
+}
+.kd-hero .pct {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--kd-txt);
+}
+.kd-hero .pct small {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--kd-sub);
+}
+.kd-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 17px;
+  background: linear-gradient(135deg, #8fb6e0, #2e7fc4);
+  color: #0a1522;
+  font-size: 12.5px;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px -8px rgba(46, 127, 196, 0.8);
+  transition: all var(--kd-t);
+}
+.kd-hero-cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
 }
 
 /* ---------- 动画 ---------- */
@@ -845,7 +924,7 @@ svg {
 }
 @keyframes kd-flashok {
   0% {
-    background: rgba(52, 211, 153, 0.18);
+    background: rgba(79, 214, 188, 0.18);
   }
   100% {
     background: var(--kd-panel);

@@ -43,24 +43,30 @@ test('侧边导航 7 项与路由一一对应（P0-11）', () => {
   assert.match(sidebar, /ROUTES/, '侧栏应消费 routes.ts 元数据')
 })
 
-test('深色主题落实：深海军蓝玻璃拟态令牌（console-mockup 对齐）', () => {
+test('深色主题落实：玻璃拟态·板岩蓝冷调令牌（docs/ui-concept 概念稿对齐）', () => {
   const css = read('styles/global.css')
-  assert.match(css, /#0b1220/i, '应有深海军蓝背景 #0B1220')
-  assert.match(css, /--kd-panel|rgba\(17,24,39/, '应有玻璃面板色')
+  assert.match(css, /#101b24/i, '应有板岩蓝深底 #101B24')
+  assert.match(css, /--kd-panel/, '应有白霜玻璃面板令牌')
   assert.match(css, /backdrop-filter/i, '应有玻璃拟态毛玻璃')
-  assert.match(css, /#22d3ee/i, '应有青→靛渐变强调色')
-  assert.match(css, /--kd-grad|linear-gradient\(135deg,#22D3EE/i, '应有渐变令牌')
+  assert.match(css, /blur\(30px\)\s*saturate\(1\.6\)/, '玻璃应为 blur(30px) saturate(1.6)')
+  assert.match(css, /#2e7fc4/i, '应有钢蓝签名色 #2E7FC4')
+  assert.match(css, /--kd-grad/, '应有渐变令牌')
   // 状态机微动效：骨架/环形/不定进度/对勾描线/脉冲
   for (const kf of ['kd-shimmer', 'kd-slide', 'kd-draw', 'kd-pl', 'kd-enter']) {
     assert.ok(css.includes(kf), `缺少动效 ${kf}`)
   }
+  // Hero 钢蓝横幅（概念稿色彩锚点）
+  assert.match(css, /\.kd-hero\b/, '应有 Hero 钢蓝横幅样式')
+  const overview = read('pages/OverviewPage.tsx')
+  assert.match(overview, /kd-hero/, '概览页应渲染 Hero 横幅')
   // 窗口背景（main 进程）
   const main = fs.readFileSync(path.join(SRC, 'main/index.ts'), 'utf-8')
-  assert.match(main, /backgroundColor: '#0B1220'/i, 'BrowserWindow 背景应为深海军蓝')
+  assert.match(main, /backgroundColor: '#182835'/i, 'BrowserWindow 背景应为板岩蓝')
   // Tailwind 令牌
   const tailwind = fs.readFileSync(path.join(process.cwd(), 'tailwind.config.js'), 'utf-8')
-  assert.match(tailwind, /#0B1220/i)
-  assert.match(tailwind, /#6366F1/i, '应有靛蓝强调色')
+  assert.match(tailwind, /#101B24/i)
+  assert.match(tailwind, /#235F93/i, '应有钢蓝深色 #235F93')
+  assert.match(tailwind, /#2E7FC4/i, '应有钢蓝强调 #2E7FC4')
 })
 
 test('批量安装交互：勾选/全选/进度/日志四要素齐备（P0-5）', () => {
