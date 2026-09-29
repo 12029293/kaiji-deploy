@@ -5,8 +5,8 @@ productName: 开机部署助手
 directories:
   # 每次输出目录必须换新（dist-outN 递增）：沙箱 safe-delete 守卫会拦截
   # electron-builder emptyDir 清理 >50 文件的旧输出目录，复用旧目录会直接构建失败。
-  # 当前：dist-out11（2026-09-30，首版玻璃拟态·板岩蓝 UI 安装包）
-  output: dist-out11
+  # 当前：dist-out14（2026-09-30，概览页对齐概念稿版）
+  output: dist-out14
   buildResources: build
 # 安装包文件名固定为「开机部署助手-Setup-<版本>.exe」
 artifactName: ${productName}-Setup-${version}.exe

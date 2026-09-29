@@ -760,75 +760,397 @@ svg {
     transform 0.3s;
 }
 
-/* ---------- Hero 钢蓝横幅（概念稿色彩锚点） ---------- */
+/* ---------- 概览页（概念稿 1:1 对齐） ---------- */
+/* Hero：钢蓝横幅 + 斜纹光带 + 环形仪表 */
 .kd-hero {
   position: relative;
   overflow: hidden;
-  border-radius: var(--kd-r);
+  border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background:
-    radial-gradient(120% 190% at 8% -10%, rgba(143, 182, 224, 0.3) 0%, transparent 55%),
-    linear-gradient(120deg, rgba(35, 95, 147, 0.55) 0%, rgba(46, 127, 196, 0.32) 55%, rgba(143, 182, 224, 0.1) 100%);
-  backdrop-filter: var(--kd-glass-filter);
-  box-shadow: var(--kd-shadow-1), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  padding: 20px 26px;
+  min-height: 268px;
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 24px;
+  padding: 32px 0 32px 34px;
+  background:
+    radial-gradient(130% 170% at 96% 6%, rgba(46, 127, 196, 0.44), rgba(46, 127, 196, 0) 60%),
+    linear-gradient(118deg, rgba(35, 95, 147, 0.44) 0%, rgba(24, 64, 100, 0.24) 46%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: var(--kd-glass-filter);
+  box-shadow: var(--kd-shadow-1), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.kd-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(620px 420px at 88% 12%, rgba(46, 127, 196, 0.55) 0%, rgba(46, 127, 196, 0) 62%),
+    radial-gradient(560px 380px at 62% 118%, rgba(143, 182, 224, 0.3) 0%, rgba(143, 182, 224, 0) 60%),
+    linear-gradient(120deg, rgba(10, 21, 34, 0.42), rgba(255, 255, 255, 0) 70%);
 }
 .kd-hero::after {
   content: '';
   position: absolute;
-  right: -60px;
-  top: -80px;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(143, 182, 224, 0.22), transparent 66%);
+  left: -6%;
+  top: -30%;
+  width: 52%;
+  height: 170%;
   pointer-events: none;
+  background: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 17px);
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.8), transparent 76%);
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.8), transparent 76%);
 }
-.kd-hero h2 {
+.kd-hcopy {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 0;
+  padding-right: 14px;
+}
+.kd-hchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.kd-chipx {
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--kd-line-strong);
+  font-size: 11.5px;
+  color: var(--kd-sub);
+  font-family: var(--font-mono, 'Cascadia Mono', Consolas, monospace);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.kd-chipx i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--kd-indigo);
+  flex: none;
+}
+.kd-hero h1 {
   margin: 0;
-  font-size: 19px;
+  font-size: 33px;
+  line-height: 1.16;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--kd-txt);
+}
+.kd-hero h1 em {
+  font-style: normal;
+  color: var(--kd-indigo);
+}
+.kd-hero .hsub {
+  margin: 13px 0 0;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--kd-sub);
+  max-width: 520px;
+}
+.kd-hact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+.kd-btn-p {
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 21px;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 640;
+  color: var(--kd-navy, #0a1522);
+  background: linear-gradient(140deg, #8fb6e0, #2e7fc4 58%, #235f93);
+  box-shadow: 0 14px 30px -12px rgba(46, 127, 196, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: all 0.2s var(--kd-ease);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.kd-btn-p:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 38px -14px rgba(46, 127, 196, 1), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  filter: brightness(1.04);
+}
+.kd-btn-p:active {
+  transform: translateY(0);
+}
+.kd-btn-g {
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 21px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 560;
+  color: var(--kd-txt);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--kd-line);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s var(--kd-ease);
+  white-space: nowrap;
+}
+.kd-btn-g:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+.kd-hgauge {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  width: 330px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-right: 26px;
+}
+.kd-ringwrap {
+  position: relative;
+  width: 196px;
+  height: 196px;
+}
+.kd-ringwrap svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.kd-ringwrap .rv {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+.kd-ringwrap .rv b {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  display: block;
+  color: var(--kd-txt);
+}
+.kd-ringwrap .rv span {
+  display: block;
+  margin-top: 7px;
+  font-size: 11px;
+  color: var(--kd-dim);
+  letter-spacing: 0.14em;
+}
+.kd-legend {
+  width: 100%;
+  max-width: 218px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.kd-lg {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--kd-sub);
+  padding: 0 4px;
+}
+.kd-lg i {
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  flex: none;
+}
+.kd-lg b {
+  margin-left: auto;
+  font-family: 'Cascadia Mono', Consolas, monospace;
+  font-size: 12.5px;
+  color: var(--kd-txt);
+  font-weight: 600;
+}
+@media (max-width: 1100px) {
+  .kd-hgauge {
+    width: 270px;
+  }
+}
+
+/* 区块标题 */
+.kd-sect {
+  margin: 0 0 14px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+.kd-sect h2 {
+  margin: 0;
+  font-size: 16px;
   font-weight: 650;
   letter-spacing: 0.01em;
   color: var(--kd-txt);
 }
-.kd-hero p {
-  margin: 4px 0 0;
-  font-size: 12.5px;
-  color: var(--kd-sub);
+.kd-sect .ssub {
+  font-size: 11.5px;
+  color: var(--kd-dim);
+  margin-bottom: 2px;
 }
-.kd-hero .pct {
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 1;
+.kd-sect .srt {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 系统信息 statcard */
+.kd-grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1100px) {
+  .kd-grid4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.kd-statcard {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--kd-r);
+  background: var(--kd-panel);
+  border: 1px solid var(--kd-line);
+  backdrop-filter: var(--kd-glass-filter);
+  padding: 17px 18px;
+  box-shadow: var(--kd-shadow-1);
+}
+.kd-statcard::after {
+  content: '';
+  position: absolute;
+  right: -24px;
+  top: -30px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46, 127, 196, 0.36), transparent 68%);
+  pointer-events: none;
+}
+.kd-statcard .lb {
+  font-size: 11px;
+  color: var(--kd-dim);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  font-family: 'Cascadia Mono', Consolas, monospace;
+}
+.kd-statcard .vl {
+  font-size: 19px;
+  font-weight: 640;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
   color: var(--kd-txt);
 }
-.kd-hero .pct small {
-  font-size: 14px;
-  font-weight: 500;
+.kd-statcard .sb {
+  margin-top: 7px;
+  font-size: 11.5px;
+  color: var(--kd-sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kd-statcard .tick {
+  margin-top: 12px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.kd-statcard .tick i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #8fb6e0, #2e7fc4);
+  transition: width 0.5s var(--kd-ease);
+}
+
+/* 模块完成度行 */
+.kd-mrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.18s var(--kd-ease);
+  color: inherit;
+  text-decoration: none;
+  width: 100%;
+}
+.kd-mrow:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.kd-mrow .mic {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--kd-line-strong);
   color: var(--kd-sub);
 }
-.kd-hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 16px;
-  border-radius: 17px;
-  background: linear-gradient(135deg, #8fb6e0, #2e7fc4);
-  color: #0a1522;
-  font-size: 12.5px;
-  font-weight: 650;
-  text-decoration: none;
-  white-space: nowrap;
-  box-shadow: 0 8px 20px -8px rgba(46, 127, 196, 0.8);
-  transition: all var(--kd-t);
+.kd-mrow .mn {
+  width: 108px;
+  flex: none;
+  font-size: 13px;
+  font-weight: 560;
+  color: var(--kd-txt);
 }
-.kd-hero-cta:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.06);
+.kd-mrow .ms {
+  flex: 1;
+  font-size: 11.5px;
+  color: var(--kd-dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kd-mrow .track {
+  width: 190px;
+  height: 5px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  flex: none;
+}
+.kd-mrow .track i {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #8fb6e0, #2e7fc4);
+  transition: width 0.5s var(--kd-ease);
+}
+.kd-mrow .mc {
+  width: 62px;
+  text-align: right;
+  font-family: 'Cascadia Mono', Consolas, monospace;
+  font-size: 12px;
+  color: var(--kd-sub);
+  flex: none;
+}
+@media (max-width: 900px) {
+  .kd-mrow .ms {
+    display: none;
+  }
+  .kd-mrow .track {
+    width: 120px;
+  }
 }
 
 /* ---------- 动画 ---------- */

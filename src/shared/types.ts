@@ -178,6 +178,26 @@ export interface SystemInfo {
   arch: string
   isAdmin: boolean
   desktopPath: string
+  /* ---- v1.1.1 概览页 statcard 扩展（概念稿对齐）；采集失败对应字段为 null ---- */
+  /** 主机名（Hero 徽章用） */
+  hostname: string
+  /** 展示名，如 "Windows 11" / "Windows 10" / "Windows_NT" */
+  osLabel: string
+  /** 短版本，如 "23H2 · 22631" */
+  osVersion: string
+  /** CPU 型号，如 "Intel Core i7-12700" */
+  cpuName: string
+  cpuCores: number | null
+  cpuThreads: number
+  cpuClockGHz: number | null
+  /** CPU 负载 0-100（短窗采样） */
+  cpuLoad: number | null
+  memTotalGB: number
+  memUsedGB: number
+  diskFreeGB: number | null
+  diskTotalGB: number | null
+  /** C 盘已用百分比 0-100 */
+  diskUsedPct: number | null
 }
 
 export interface ProxySettings {

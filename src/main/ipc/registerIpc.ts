@@ -3,7 +3,6 @@
  * 所有 invoke 返回统一 {ok, data?, error?} 包装（ARCH 共享知识 #4）。
  */
 import { ipcMain } from 'electron'
-import os from 'node:os'
 import {
   IPC,
   type AppConfigView,
@@ -28,6 +27,7 @@ import { edgeService } from '../services/edgeService'
 import { imeService } from '../services/imeService'
 import { systemToolsService } from '../services/systemToolsService'
 import { wallpaperService } from '../services/wallpaperService'
+import { getSystemInfo } from '../services/systemInfoService'
 import { wallhavenService } from '../services/wallhavenService'
 
 type Handler = (payload: unknown) => unknown | Promise<unknown>
@@ -92,12 +92,12 @@ function asStringArray(payload: unknown): string[] {
 
 export function registerIpc(): void {
   // 系统
-  handle(IPC.SYSTEM_INFO, async (): Promise<SystemInfo> => ({
-    os: `${os.type()} ${os.release()}`,
-    arch: os.arch(),
-    isAdmin: await isElevated(),
-    desktopPath: getDesktopPath()
-  }))
+  handle(IPC.SYSTEM_INFO, async (): Promise<SystemInfo> => {
+    const [info, isAdmin] = await Promise.all([getSystemInfo(), isElevated()])
+    info.isAdmin = isAdmin
+    info.desktopPath = getDesktopPath()
+    return info
+  })
 
   // 任务
   handle(IPC.TASKS_RUN, (p) => ({ started: taskQueue.enqueue(asStringArray(p)) }))

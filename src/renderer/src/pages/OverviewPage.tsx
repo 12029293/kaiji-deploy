@@ -1,5 +1,6 @@
 /**
- * 概览仪表盘：系统信息 + 管理员状态 + 各模块完成度（P1-5）。
+ * 概览仪表盘（v1.1.1，docs/ui-concept 概念稿 1:1 对齐）：
+ * Hero（徽章 + 大标题 + 双 CTA + 环形仪表/图例）→ 系统信息 statcard → 模块完成度行。
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -7,7 +8,6 @@ import { IPC, type SystemInfo } from '@shared/types'
 import { call } from '../api'
 import { useTasksStore } from '../store/tasksStore'
 import { useUiStore } from '../store/uiStore'
-import ProgressBar from '../components/ProgressBar'
 import { Icon, type IconName } from '../components/Icons'
 
 const MODULES: Array<{
@@ -40,15 +40,15 @@ const MODULES: Array<{
   }
 ]
 
-const ENTRIES: Array<{ path: string; title: string; desc: string; icon: IconName }> = [
-  { path: '/edge', title: '浏览器定制', desc: '收藏夹导入 · 深色主题 · 下载位置改为桌面', icon: 'brush' },
-  { path: '/tools', title: '系统工具', desc: '删角标 · 图标缓存 · 磁贴美化 · 激活 · 禁用更新', icon: 'gear' },
-  { path: '/wallpaper', title: '壁纸', desc: 'Wallhaven 在线图库一键设为桌面，支持分页浏览', icon: 'image' }
-]
+const R = 80
+const CIRC = 2 * Math.PI * R
 
 export default function OverviewPage(): JSX.Element {
   const [info, setInfo] = useState<SystemInfo | null>(null)
   const toast = useUiStore((s) => s.toast)
+  const setLogOpen = useUiStore((s) => s.setLogOpen)
+  const configs = useTasksStore((s) => s.configs)
+  const tasks = useTasksStore((s) => s.tasks)
   const categorySummary = useTasksStore((s) => s.categorySummary)
 
   useEffect(() => {
@@ -58,119 +58,187 @@ export default function OverviewPage(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const tiles = [
-    { label: '操作系统', value: info?.os ?? '读取中…', tone: 'text-white' },
-    { label: '架构', value: info?.arch ?? '-', tone: 'text-white' },
+  /* 全局状态计数（三个软件类模块的 29 项） */
+  const total = configs.length
+  const done = Object.values(tasks).filter((t) => t.status === 'success').length
+  const manual = Object.values(tasks).filter((t) => t.status === 'manual-needed').length
+  const failed = Object.values(tasks).filter((t) => t.status === 'failed').length
+  const idle = Math.max(0, total - done - manual - failed)
+
+  /* 环形仪表三段弧：已就绪(ok) → 需人工+失败(warn) → 待装(sig) */
+  const seg = (n: number) => (total ? (CIRC * n) / total : 0)
+  const a1 = seg(done)
+  const a2 = seg(manual + failed)
+  const a3 = seg(idle)
+
+  const statcards = [
     {
-      label: '管理员权限',
-      value: info === null ? '…' : info.isAdmin ? '已提权' : '未提权（功能受限）',
-      tone: info?.isAdmin ? 'text-ok' : 'text-bad'
+      lb: 'SYSTEM',
+      vl: info?.osLabel ?? '读取中…',
+      sb: info ? `${info.osVersion} · ${info.isAdmin ? '管理员' : '未提权'}` : '…',
+      tick: null as number | null
     },
-    { label: '桌面路径', value: info?.desktopPath ?? '-', tone: 'text-white' }
+    {
+      lb: 'CPU',
+      vl:
+        info?.cpuCores != null ? `${info.cpuCores} 核 ${info.cpuThreads} 线程` : `${info?.cpuThreads ?? '—'} 线程`,
+      sb: info ? `${info.cpuName}${info.cpuClockGHz ? ` · ${info.cpuClockGHz.toFixed(1)} GHz` : ''}` : '…',
+      tick: info?.cpuLoad ?? null
+    },
+    {
+      lb: 'MEMORY',
+      vl: info ? `${info.memTotalGB} GB` : '…',
+      sb: info
+        ? `已用 ${info.memUsedGB} GB · 空闲 ${Math.max(0, info.memTotalGB - info.memUsedGB)} GB`
+        : '…',
+      tick: info ? Math.round((info.memUsedGB / info.memTotalGB) * 100) : null
+    },
+    {
+      lb: 'STORAGE',
+      vl: info?.diskFreeGB != null ? `C: ${info.diskFreeGB} GB 可用` : 'C: …',
+      sb: info?.diskTotalGB != null && info?.diskUsedPct != null ? `共 ${info.diskTotalGB} GB · 已用 ${info.diskUsedPct}%` : '…',
+      tick: info?.diskUsedPct ?? null
+    }
   ]
 
-  /* 三个软件类模块的整体完成度（Hero 用） */
-  const overall = (() => {
-    const parts = MODULES.map((m) => categorySummary(m.category))
-    const total = parts.reduce((n, p) => n + p.total, 0)
-    const success = parts.reduce((n, p) => n + p.success, 0)
-    return total ? Math.round((success / total) * 100) : 0
-  })()
-
   return (
-    <div className="kd-fade-in mx-auto max-w-[1400px] space-y-4">
-      {/* Hero：钢蓝横幅（概念稿色彩锚点） */}
-      <div className="kd-hero">
-        <div className="min-w-0 flex-1">
-          <h2>一键部署，装机即用</h2>
-          <p>勾选要安装的软件与要做的系统设置，交给部署控制台批量执行。</p>
-        </div>
-        <div className="shrink-0 text-right">
-          <div className="kd-num pct">
-            {overall}
-            <small>%</small>
+    <div className="kd-fade-in">
+      {/* ===== Hero ===== */}
+      <section className="kd-hero">
+        <div className="kd-hcopy">
+          <div className="kd-hchips">
+            <span className="kd-chipx">
+              <i />
+              {info?.hostname ?? '…'}
+            </span>
+            <span className="kd-chipx">{info ? `${info.osLabel} · ${info.osVersion.split(' · ')[0]}` : '…'}</span>
+            <span className="kd-chipx">共 {total || '…'} 个软件模块</span>
           </div>
-          <div className="text-[11px] text-dim">整体完成度</div>
+          <h1>
+            {idle} 项待部署，<em>{done} 项已就绪</em>
+          </h1>
+          <p className="hsub">
+            勾选需要的软件，一次跑完{' '}
+            <b style={{ color: 'var(--kd-txt)' }}>解析 → 下载 → 静默安装 → 校验</b>
+            。所有下载源在开始前已核验可达，写入前自动备份。
+          </p>
+          <div className="kd-hact">
+            <Link to="/devenv" className="kd-btn-p">
+              <Icon name="play" size={15} />
+              开始部署
+            </Link>
+            <button type="button" className="kd-btn-g" onClick={() => setLogOpen(true)}>
+              <Icon name="check" size={14} />
+              查看运行日志
+            </button>
+          </div>
         </div>
-        <Link to="/daily" className="kd-hero-cta">
-          开始部署
-          <Icon name="chevronR" size={14} />
-        </Link>
-      </div>
 
-      {/* 系统信息 */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {tiles.map((t) => (
-          <div key={t.label} className="kd-toolcard !p-4">
-            <div className="text-xs text-dim">{t.label}</div>
-            <div className={`mt-1 truncate text-sm font-semibold ${t.tone}`} title={String(t.value)}>
-              {t.value}
+        <div className="kd-hgauge">
+          <div className="kd-ringwrap">
+            <svg viewBox="0 0 196 196">
+              <circle cx="98" cy="98" r={R} fill="none" stroke="rgba(255,255,255,.09)" strokeWidth="11" />
+              {a1 > 0 && (
+                <circle
+                  cx="98" cy="98" r={R} fill="none" stroke="var(--kd-ok)" strokeWidth="11"
+                  strokeLinecap="round" strokeDasharray={`${a1} ${CIRC - a1}`} strokeDashoffset={0}
+                />
+              )}
+              {a2 > 0 && (
+                <circle
+                  cx="98" cy="98" r={R} fill="none" stroke="var(--kd-warn)" strokeWidth="11"
+                  strokeLinecap="round" strokeDasharray={`${a2} ${CIRC - a2}`} strokeDashoffset={-a1}
+                />
+              )}
+              {a3 > 0 && (
+                <circle
+                  cx="98" cy="98" r={R} fill="none" stroke="var(--kd-cyan)" strokeWidth="11"
+                  strokeLinecap="round" strokeDasharray={`${a3} ${CIRC - a3}`} strokeDashoffset={-(a1 + a2)}
+                />
+              )}
+            </svg>
+            <div className="rv">
+              <b className="kd-num">{idle}</b>
+              <span>待部署</span>
             </div>
+          </div>
+          <div className="kd-legend">
+            <div className="kd-lg">
+              <i style={{ background: 'var(--kd-cyan)' }} />
+              待装<b className="kd-num">{idle}</b>
+            </div>
+            <div className="kd-lg">
+              <i style={{ background: 'var(--kd-ok)' }} />
+              已就绪<b className="kd-num">{done}</b>
+            </div>
+            <div className="kd-lg">
+              <i style={{ background: 'var(--kd-warn)' }} />
+              需人工<b className="kd-num">{manual}</b>
+            </div>
+            <div className="kd-lg">
+              <i style={{ background: 'var(--kd-err)' }} />
+              失败<b className="kd-num">{failed}</b>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 系统信息 ===== */}
+      <div className="kd-sect" style={{ marginTop: 20 }}>
+        <h2>系统信息</h2>
+        <span className="ssub">开机自动采集 · 只读</span>
+      </div>
+      <div className="kd-grid4">
+        {statcards.map((c) => (
+          <div key={c.lb} className="kd-statcard">
+            <div className="lb">{c.lb}</div>
+            <div className="vl" title={c.vl}>{c.vl}</div>
+            <div className="sb" title={c.sb}>{c.sb}</div>
+            {c.tick != null && (
+              <div className="tick">
+                <i style={{ width: `${Math.min(100, Math.max(2, c.tick))}%` }} />
+              </div>
+            )}
           </div>
         ))}
       </div>
 
       {info && !info.isAdmin && (
-        <div className="flex items-center gap-2 rounded-[16px] border border-warn/40 bg-warn/10 px-4 py-3 text-sm text-warn">
+        <div className="flex items-center gap-2 rounded-[16px] border border-warn/40 bg-warn/10 px-4 py-3 text-sm text-warn" style={{ marginBottom: 16 }}>
           <Icon name="alert" size={15} />
           当前未以管理员身份运行：删角标、禁用更新、Edge 定制等系统级功能可能失败。请右键「以管理员身份运行」。
         </div>
       )}
 
-      {/* 模块完成度 */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      {/* ===== 模块完成度 ===== */}
+      <div className="kd-sect">
+        <h2>模块完成度</h2>
+        <span className="ssub">点击进入对应模块</span>
+        <span className="srt">
+          <span className="kd-chipx">
+            {done} / {total} 已就绪
+          </span>
+        </span>
+      </div>
+      <div className="kd-toolcard" style={{ padding: '8px 6px' }}>
         {MODULES.map((m) => {
           const s = categorySummary(m.category)
           return (
-            <Link
-              key={m.path}
-              to={m.path}
-              className="kd-toolcard kd-card-hover !p-5 no-underline"
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-[11px] text-white"
-                  style={{
-                    background:
-                      'linear-gradient(135deg,rgba(143,182,224,.3),rgba(46,127,196,.32))',
-                    border: '1px solid var(--kd-line-strong)'
-                  }}
-                >
-                  <Icon name={m.icon} size={19} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-[14px] font-semibold text-white">{m.title}</h3>
-                  <p className="mt-0.5 min-h-[36px] text-xs leading-[18px] text-dim">{m.desc}</p>
-                </div>
-                <span className="kd-num shrink-0 text-2xl font-bold leading-none text-white">
-                  {s.percent}
-                  <span className="text-sm text-dim">%</span>
-                </span>
-              </div>
-              <div className="mt-3">
-                <ProgressBar value={s.percent} />
-                <div className="mt-1.5 text-[11px] text-dim">
-                  {s.success} / {s.total} 完成
-                </div>
-              </div>
+            <Link key={m.path} to={m.path} className="kd-mrow">
+              <span className="mic">
+                <Icon name={m.icon} size={17} />
+              </span>
+              <span className="mn">{m.title}</span>
+              <span className="ms" title={m.desc}>{m.desc}</span>
+              <span className="track">
+                <i style={{ width: `${s.percent}%` }} />
+              </span>
+              <span className="mc">
+                {s.success} / {s.total}
+              </span>
             </Link>
           )
         })}
-      </div>
-
-      {/* 其他模块入口 */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {ENTRIES.map((m) => (
-          <Link key={m.path} to={m.path} className="kd-toolcard kd-card-hover !p-5 no-underline">
-            <div className="flex items-center gap-[10px]">
-              <span className="text-accent">
-                <Icon name={m.icon} size={17} />
-              </span>
-              <h3 className="text-[14px] font-semibold text-white">{m.title}</h3>
-            </div>
-            <p className="mt-2 text-xs leading-[18px] text-dim">{m.desc}</p>
-          </Link>
-        ))}
       </div>
     </div>
   )
