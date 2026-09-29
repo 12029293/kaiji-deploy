@@ -1,0 +1,48 @@
+# 开机部署助手 electron-builder 打包配置
+# 关键点：NSIS + requireAdministrator 提权；extraResources 携带本地安装包与素材
+appId: com.kaiji.deploy
+productName: 开机部署助手
+directories:
+  # v1.0.9：输出目录换新（旧 dist-out4/win-unpacked 处于沙箱删除守卫保护下，
+  # 无法 rename/清空，会让 electron-builder 的 emptyDir 直接失败）
+  output: dist-out5
+  buildResources: build
+# 安装包文件名固定为「开机部署助手-Setup-<版本>.exe」
+artifactName: ${productName}-Setup-${version}.exe
+# 直接使用本地 node_modules 的 electron 运行时，绕开 zip 缓存解包（本机解包链路不稳定）
+electronDist: node_modules/electron/dist
+files:
+  - out/**
+  - package.json
+asar: true
+extraResources:
+  # 素材根目录（本地安装包/系统工具/壁纸），打包后位于 resources/assets
+  - from: '../'
+    to: 'assets'
+    filter:
+      - Clash.Verge_2.5.6_x64-setup.exe
+      - 蓝山看图王-1.0.3.21021.exe
+      - 系统激活.exe
+      - IDM_6.4x_Crack_v20.6.exe
+      - 磁贴美化小工具 v4.1.1/**
+      - 禁用更新/**
+      # v1.0.9：不再内置壁纸素材（约 51 张），在线壁纸库（彼岸图网 / Wallhaven）为主
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  # 应用图标（AI 生成，WorkBuddy 风格绿色机器人吉祥物）
+  icon: build/icon.ico
+  # 注意：不要设置 requestedExecutionLevel: requireAdministrator ——
+  # 该清单会破坏 Chromium 子进程创建（GPU 进程 launch failed 启动即崩）。
+  # 管理员权限由主进程启动时检测并以 UAC 重启自身实现（src/main/index.ts 自提权）。
+  requestedExecutionLevel: asInvoker
+nsis:
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: 开机部署助手
+  # 关闭差量更新包（blockmap 需 app-builder，本机该链路损坏；单机部署无需差量）
+  differentialPackage: false

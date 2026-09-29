@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' file: data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src 'self'">
+<title>开机部署助手 · UI 概念（玻璃拟态 · 冷调）</title>
+<style>
+/* ============================================================
+   开机部署助手 · UI 概念（玻璃拟态 / 板岩蓝冷调）
+   仅预览，不改动 kaiji-deploy 源码
+   取色自参考图一（Flix.id）：板岩蓝灰氛围 #678594 · 白霜玻璃 #859DA7
+                           深海军蓝 #091523 · 签名钢蓝 #235F93 · 柔蓝 #8BA2CD
+   ============================================================ */
+
+/* ---------- 基础 ---------- */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei UI","Segoe UI Variable Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,"Cascadia Mono","SF Mono",Consolas,monospace;
+
+  --r-xl:30px; --r-lg:22px; --r-md:16px; --r-sm:12px; --r-pill:999px;
+
+  --ink:#F2F6FA;
+  --ink-2:rgba(242,246,250,.68);
+  --ink-3:rgba(242,246,250,.44);
+  --ink-4:rgba(242,246,250,.26);
+
+  --glass-1:linear-gradient(180deg,rgba(255,255,255,.115),rgba(255,255,255,.048));
+  --glass-2:linear-gradient(180deg,rgba(255,255,255,.082),rgba(255,255,255,.034));
+  --glass-3:linear-gradient(180deg,rgba(255,255,255,.155),rgba(255,255,255,.065));
+  --stroke:rgba(255,255,255,.145);
+  --stroke-2:rgba(255,255,255,.1);
+  --hi:inset 0 1px 0 rgba(255,255,255,.15);
+  --shadow:0 26px 60px -26px rgba(3,9,14,.8), 0 8px 22px -14px rgba(3,9,14,.62);
+
+  /* 信号色 = 参考图一的签名钢蓝 */
+  --sig:#2E7FC4;
+  --sig-2:#8FB6E0;
+  --sig-deep:#235F93;
+  --navy:#0A1522;
+  --ok:#4FD6BC;
+  --warn:#F2B45E;
+  --err:#FF8282;
+  --info:#8BA2CD;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+html,body{height:100%}
+body{
+  font-family:var(--font);color:var(--ink);
+  background:#121D27;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+  font-feature-settings:"tnum" 1;
+}
+/* 板岩蓝冷调氛围底（取色自参考图一 #678594） */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(1100px 620px at 6% -12%, rgba(150,190,214,.5) 0%, rgba(150,190,214,0) 58%),
+    radial-gradient(820px 560px at 96% 2%, rgba(35,95,147,.6) 0%, rgba(35,95,147,0) 62%),
+    radial-gradient(1300px 900px at 70% 118%, rgba(46,76,100,.92) 0%, rgba(46,76,100,0) 62%),
+    radial-gradient(900px 700px at 14% 92%, rgba(120,166,196,.24) 0%, rgba(120,166,196,0) 65%),
+    linear-gradient(158deg,#22333F 0%,#1B2B38 42%,#121D27 100%);
+}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+
+/* ---------- 玻璃通用 ---------- */
+.glass{background:var(--glass-1);backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);
+  border:1px solid var(--stroke);box-shadow:var(--shadow),var(--hi)}
+.glass-2{background:var(--glass-2);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
+  border:1px solid var(--stroke-2);box-shadow:0 14px 34px -20px rgba(0,0,0,.7),var(--hi)}
+
+/* ---------- 布局骨架 ---------- */
+.app{position:relative;z-index:2;height:100vh;display:flex;flex-direction:column;padding:16px 18px 0;gap:14px}
+
+/* ---------- 顶栏 ---------- */
+.topbar{height:62px;flex:none;display:flex;align-items:center;gap:16px;padding:0 12px 0 14px;border-radius:var(--r-lg)}
+.brand{display:flex;align-items:center;gap:11px;flex:none}
+.mark{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(140deg,var(--sig-2),var(--sig) 58%,var(--sig-deep));
+  box-shadow:0 8px 20px -8px rgba(46,127,196,.85), inset 0 1px 0 rgba(255,255,255,.4)}
+.mark svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bname{font-size:15px;font-weight:650;letter-spacing:.02em;line-height:1.15}
+.bsub{font-size:9.5px;color:var(--ink-4);letter-spacing:.16em;text-transform:uppercase;font-family:var(--mono)}
+
+.searchbox{margin-left:8px;flex:1;max-width:340px;height:38px;border-radius:var(--r-pill);display:flex;align-items:center;gap:9px;padding:0 15px;
+  background:rgba(255,255,255,.07);border:1px solid var(--stroke-2);transition:border-color .2s var(--ease),background .2s var(--ease)}
+.searchbox:focus-within{border-color:rgba(255,255,255,.26);background:rgba(255,255,255,.1)}
+.searchbox svg{width:15px;height:15px;stroke:var(--ink-3);fill:none;stroke-width:1.8;stroke-linecap:round;flex:none}
+.searchbox input{flex:1;background:none;border:0;outline:0;color:var(--ink);font:inherit;font-size:13px}
+.searchbox input::placeholder{color:var(--ink-4)}
+.searchbox.hide{display:none}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:9px;flex:none}
+.stat-chip{height:34px;border-radius:var(--r-pill);display:flex;align-items:center;gap:8px;padding:0 14px;
+  background:rgba(255,255,255,.06);border:1px solid var(--stroke-2);font-size:12px;color:var(--ink-2)}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(79,214,188,.6);animation:pl 2.4s infinite}
+.stat-chip.run .pulse{background:var(--sig);animation-duration:1.2s}
+@keyframes pl{0%{box-shadow:0 0 0 0 rgba(46,127,196,.55)}70%{box-shadow:0 0 0 9px rgba(46,127,196,0)}100%{box-shadow:0 0 0 0 rgba(46,127,196,0)}}
+.ibtn{position:relative;width:38px;height:38px;border-radius:13px;display:grid;place-items:center;cursor:pointer;
+  background:rgba(255,255,255,.06);border:1px solid var(--stroke-2);color:var(--ink-2);transition:.2s var(--ease)}
+.ibtn:hover{background:rgba(255,255,255,.13);color:var(--ink);transform:translateY(-1px)}
+.ibtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ibtn .bdg{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:grid;place-items:center;
+  font-size:10px;font-weight:700;font-family:var(--mono);background:linear-gradient(140deg,var(--sig-2),var(--sig));color:var(--navy);
+  border:1.5px solid rgba(18,29,39,.9)}
+
+/* ---------- 舞台 ---------- */
+.stage{flex:1;display:flex;gap:16px;min-height:0;padding-bottom:14px}
+.railtrack{width:62px;flex:none;position:relative}
+.rail{position:absolute;left:0;top:0;bottom:0;width:62px;border-radius:26px;padding:12px 0;display:flex;flex-direction:column;gap:6px;
+  overflow:hidden;transition:width .26s var(--ease),box-shadow .26s var(--ease);z-index:6}
+.railtrack:hover .rail{width:186px;box-shadow:0 30px 70px -24px rgba(0,0,0,.85),var(--hi)}
+.ritem{position:relative;display:flex;align-items:center;gap:13px;height:44px;margin:0 9px;padding:0 11px;border-radius:14px;cursor:pointer;
+  color:var(--ink-3);flex:none;transition:.2s var(--ease);white-space:nowrap}
+.ritem svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ritem .rl{font-size:13px;font-weight:560;opacity:0;transform:translateX(-6px);transition:.22s var(--ease)}
+.railtrack:hover .ritem .rl{opacity:1;transform:none}
+.ritem:hover{background:rgba(255,255,255,.09);color:var(--ink)}
+.ritem.on{background:linear-gradient(180deg,rgba(10,21,34,.92),rgba(15,31,47,.82));color:var(--ink);
+  box-shadow:var(--hi),0 12px 26px -16px rgba(3,9,14,.95)}
+.ritem.on::before{content:"";position:absolute;left:-9px;top:50%;transform:translateY(-50%);width:3px;height:20px;border-radius:3px;
+  background:linear-gradient(180deg,var(--sig-2),var(--sig));box-shadow:0 0 12px rgba(46,127,196,.8)}
+.ritem .rc{margin-left:auto;font-size:10.5px;font-family:var(--mono);color:var(--ink-4);opacity:0;transition:.2s var(--ease)}
+.railtrack:hover .ritem .rc{opacity:1}
+.railfoot{margin-top:auto;padding:0 9px}
+
+.main{flex:1;min-width:0;overflow-y:auto;overflow-x:hidden;padding:2px 6px 8px 2px;scrollbar-gutter:stable}
+.main::-webkit-scrollbar{width:9px}
+.main::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:9px;border:2px solid transparent;background-clip:content-box}
+.main::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.24);background-clip:content-box}
+.main::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- 页面进入动画 ---------- */
+.pg{animation:pg .32s var(--ease)}
+@keyframes pg{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;border-radius:var(--r-xl);overflow:hidden;min-height:268px;display:flex;align-items:center;gap:24px;padding:32px 0 32px 34px;margin-bottom:20px;
+  background:
+    radial-gradient(130% 170% at 96% 6%, rgba(46,127,196,.44), rgba(46,127,196,0) 60%),
+    linear-gradient(118deg, rgba(35,95,147,.44) 0%, rgba(24,64,100,.24) 46%, rgba(255,255,255,.05) 100%)}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(620px 420px at 88% 12%, rgba(46,127,196,.55) 0%, rgba(46,127,196,0) 62%),
+    radial-gradient(560px 380px at 62% 118%, rgba(143,182,224,.3) 0%, rgba(143,182,224,0) 60%),
+    linear-gradient(120deg, rgba(10,21,34,.42), rgba(255,255,255,0) 70%)}
+.hero::after{content:"";position:absolute;left:-6%;top:-30%;width:52%;height:170%;pointer-events:none;
+  background:repeating-linear-gradient(115deg, rgba(255,255,255,.055) 0 1px, transparent 1px 17px);
+  mask-image:linear-gradient(90deg,rgba(0,0,0,.8),transparent 76%);-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.8),transparent 76%)}
+.hcopy{position:relative;z-index:2;flex:1;min-width:0;padding-right:14px}
+.hchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip-x{height:26px;display:inline-flex;align-items:center;gap:7px;padding:0 12px;border-radius:var(--r-pill);
+  background:rgba(255,255,255,.09);border:1px solid var(--stroke-2);font-size:11.5px;color:var(--ink-2);font-family:var(--mono);letter-spacing:.02em}
+.chip-x i{width:5px;height:5px;border-radius:50%;background:var(--sig-2);flex:none}
+.hero h1{font-size:33px;line-height:1.16;font-weight:700;letter-spacing:-.015em}
+.hero h1 em{font-style:normal;color:var(--sig-2)}
+.hero p{margin-top:13px;font-size:13px;line-height:1.75;color:var(--ink-2);max-width:520px}
+.hact{display:flex;align-items:center;gap:10px;margin-top:22px}
+.btn-p{height:42px;padding:0 20px;border-radius:var(--r-pill);border:0;cursor:pointer;display:inline-flex;align-items:center;gap:9px;
+  font:inherit;font-size:13.5px;font-weight:640;color:var(--navy);
+  background:linear-gradient(140deg,var(--sig-2),var(--sig) 58%,var(--sig-deep));
+  box-shadow:0 14px 30px -12px rgba(46,127,196,.9), inset 0 1px 0 rgba(255,255,255,.45);transition:.2s var(--ease)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 20px 38px -14px rgba(46,127,196,1), inset 0 1px 0 rgba(255,255,255,.5)}
+.btn-p:active{transform:translateY(0)}
+.btn-p svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-g{height:42px;padding:0 18px;border-radius:var(--r-pill);cursor:pointer;font:inherit;font-size:13px;font-weight:560;color:var(--ink);
+  background:rgba(255,255,255,.08);border:1px solid var(--stroke);display:inline-flex;align-items:center;gap:8px;transition:.2s var(--ease)}
+.btn-g:hover{background:rgba(255,255,255,.15);transform:translateY(-2px)}
+.btn-g svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn-p:disabled,.btn-g:disabled{opacity:.42;cursor:not-allowed;transform:none!important;box-shadow:none}
+
+.hgauge{position:relative;z-index:2;flex:none;width:330px;display:flex;flex-direction:column;align-items:center;gap:14px;padding-right:26px}
+.ringwrap{position:relative;width:196px;height:196px}
+.ringwrap svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ringwrap .rv{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ringwrap .rv b{font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:1;display:block}
+.ringwrap .rv span{display:block;margin-top:7px;font-size:11px;color:var(--ink-3);letter-spacing:.14em}
+.legend{width:100%;max-width:218px;display:flex;flex-direction:column;gap:7px}
+.lg{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink-2);padding:0 4px}
+.lg i{width:8px;height:8px;border-radius:3px;flex:none}
+.lg b{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:var(--ink);font-weight:600}
+
+/* ---------- 区块标题 ---------- */
+.sect{margin:0 0 14px;display:flex;align-items:flex-end;gap:12px}
+.sect h2{font-size:16px;font-weight:650;letter-spacing:.01em}
+.sect p{font-size:11.5px;color:var(--ink-4);margin-bottom:2px}
+.sect .rt{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+/* ---------- 系统信息卡 ---------- */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.statcard{padding:17px 18px;border-radius:var(--r-lg);position:relative;overflow:hidden}
+.statcard::after{content:"";position:absolute;right:-24px;top:-30px;width:96px;height:96px;border-radius:50%;
+  background:radial-gradient(circle,rgba(46,127,196,.36),transparent 68%)}
+.statcard .lb{font-size:11px;color:var(--ink-4);letter-spacing:.1em;margin-bottom:10px}
+.statcard .vl{font-size:19px;font-weight:640;letter-spacing:-.01em;line-height:1.2}
+.statcard .sb{margin-top:7px;font-size:11.5px;color:var(--ink-3)}
+.statcard .tick{margin-top:12px;height:4px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden}
+.statcard .tick i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--sig-2),var(--sig))}
+
+/* ---------- 模块完成度 ---------- */
+.panel{border-radius:var(--r-lg);padding:8px 6px;margin-bottom:22px}
+.mrow{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:var(--r-md);cursor:pointer;transition:.18s var(--ease)}
+.mrow:hover{background:rgba(255,255,255,.06)}
+.mrow .mic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;background:rgba(255,255,255,.08);border:1px solid var(--stroke-2);color:var(--ink-2)}
+.mrow .mic svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mrow .mn{width:108px;flex:none;font-size:13px;font-weight:560}
+.mrow .ms{flex:1;font-size:11.5px;color:var(--ink-4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track{width:190px;height:5px;border-radius:5px;background:rgba(255,255,255,.1);overflow:hidden;flex:none}
+.track i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--sig-2),var(--sig));transition:width .5s var(--ease)}
+.mrow .mc{width:62px;text-align:right;font-family:var(--mono);font-size:12px;color:var(--ink-2);flex:none}
+
+/* ---------- 筛选胶囊 ---------- */
+.chips{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px}
+.chip{height:36px;padding:0 15px;border-radius:var(--r-pill);cursor:pointer;font:inherit;font-size:12.5px;font-weight:540;color:var(--ink-2);
+  background:rgba(255,255,255,.055);border:1px solid var(--stroke-2);display:inline-flex;align-items:center;gap:8px;transition:.18s var(--ease)}
+.chip:hover{background:rgba(255,255,255,.12);color:var(--ink)}
+.chip.on{background:var(--glass-3);color:var(--ink);border-color:rgba(255,255,255,.22);box-shadow:var(--hi)}
+.chip b{font-family:var(--mono);font-size:11px;color:var(--ink-4);font-weight:600}
+.chip.on b{color:var(--sig-2)}
+.chip i{width:6px;height:6px;border-radius:50%;flex:none}
+
+/* ---------- 软件卡网格 ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(198px,1fr));gap:18px 16px}
+.card{cursor:pointer;transition:transform .22s var(--ease)}
+.card:hover{transform:translateY(-5px)}
+.cover{position:relative;aspect-ratio:4/3;border-radius:var(--r-md);overflow:hidden;
+  background:
+    radial-gradient(120% 92% at 24% 4%, hsl(var(--h2) 78% 62% / .46), transparent 62%),
+    radial-gradient(90% 80% at 88% 100%, hsl(var(--h2) 64% 42% / .24), transparent 64%),
+    linear-gradient(158deg, hsl(var(--h2) 44% 30%) 0%, #182633 58%, #101A24 100%);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 16px 34px -20px rgba(3,9,14,.92), inset 0 1px 0 rgba(255,255,255,.16);
+  transition:box-shadow .24s var(--ease),border-color .24s var(--ease)}
+.card:hover .cover{box-shadow:0 26px 48px -20px rgba(3,9,14,.96), inset 0 1px 0 rgba(255,255,255,.24)}
+.cover .mono2{position:absolute;left:0;right:0;top:38%;transform:translateY(-50%);text-align:center;
+  font-size:40px;font-weight:700;letter-spacing:-.03em;color:rgba(255,255,255,.93);
+  text-shadow:0 4px 18px rgba(0,0,0,.45)}
+.cover .mono2.sm{font-size:28px}
+.cover .gl{position:absolute;inset:0;background:repeating-linear-gradient(122deg,rgba(255,255,255,.05) 0 1px,transparent 1px 13px);pointer-events:none}
+.card.on .cover{border-color:var(--sig);box-shadow:0 0 0 2px rgba(46,127,196,.65),0 26px 48px -20px rgba(3,9,14,.95)}
+.spill{position:absolute;top:9px;right:9px;height:23px;padding:0 9px;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:600;color:#F2F6FA;background:rgba(10,21,34,.58);border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.spill i{width:6px;height:6px;border-radius:50%;flex:none}
+.i-idle{background:rgba(255,255,255,.5)}
+.i-done{background:var(--ok)}
+.i-manual{background:var(--warn)}
+.i-failed{background:var(--err)}
+.i-run{background:var(--sig);animation:pl 1.2s infinite}
+.selbox{position:absolute;top:9px;left:9px;width:23px;height:23px;border-radius:8px;display:grid;place-items:center;opacity:0;
+  background:rgba(10,21,34,.52);border:1.5px solid rgba(255,255,255,.4);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:.18s var(--ease)}
+.selbox svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.card:hover .selbox{opacity:1}
+.card.on .selbox{opacity:1;background:linear-gradient(140deg,var(--sig-2),var(--sig));border-color:transparent}
+.card.on .selbox svg{opacity:1;stroke:var(--navy)}
+.mini{position:absolute;right:9px;bottom:9px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  background:rgba(10,21,34,.56);border:1px solid rgba(255,255,255,.18);opacity:0;transform:scale(.86);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:.2s var(--ease)}
+.card:hover .mini{opacity:1;transform:none}
+.mini:hover{background:linear-gradient(140deg,var(--sig-2),var(--sig));border-color:transparent}
+.mini svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mini:hover svg{stroke:var(--navy)}
+.cprog{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.12)}
+.cprog i{display:block;height:100%;background:linear-gradient(90deg,var(--sig-2),var(--sig));box-shadow:0 0 14px rgba(46,127,196,.9);transition:width .3s linear}
+.cbody{padding:11px 3px 2px}
+.cbody h4{font-size:13.5px;font-weight:600;letter-spacing:.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmeta{margin-top:6px;display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink-3);font-family:var(--mono)}
+.cmeta i{width:6px;height:6px;border-radius:50%;flex:none}
+.cmeta span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cnone{grid-column:1/-1;padding:60px 0;text-align:center;color:var(--ink-4);font-size:13px}
+
+/* ---------- 提示条 ---------- */
+.note{margin-top:20px;border-radius:var(--r-md);padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.note svg{width:16px;height:16px;stroke:var(--warn);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;margin-top:1px}
+.note p{font-size:12px;line-height:1.7;color:var(--ink-2)}
+.note p b{color:var(--ink);font-weight:600}
+
+/* ---------- 系统工具磁贴 ---------- */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tile{border-radius:var(--r-lg);padding:20px;cursor:pointer;position:relative;overflow:hidden;transition:.22s var(--ease)}
+.tile:hover{transform:translateY(-4px);background:var(--glass-3)}
+.tile::after{content:"";position:absolute;right:-30px;top:-40px;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(46,127,196,.26),transparent 68%);opacity:0;transition:.3s var(--ease)}
+.tile:hover::after{opacity:1}
+.tile .tic{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(255,255,255,.08);
+  border:1px solid var(--stroke-2);color:var(--ink-2);margin-bottom:16px;transition:.22s var(--ease)}
+.tile:hover .tic{background:linear-gradient(140deg,rgba(143,182,224,.92),rgba(46,127,196,.88));color:var(--navy);border-color:transparent}
+.tile .tic svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tile h4{font-size:14px;font-weight:620;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tile p{font-size:11.5px;line-height:1.65;color:var(--ink-3);min-height:38px}
+.tile .tf{margin-top:14px;display:flex;align-items:center;justify-content:space-between}
+.tile .go{height:30px;padding:0 14px;border-radius:var(--r-pill);font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.09);border:1px solid var(--stroke-2);color:var(--ink-2);
+  position:relative;z-index:2;transition:.2s var(--ease)}
+.tile:hover .go{background:rgba(255,255,255,.18);color:var(--ink)}
+.tagrisk{font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:3px 7px;border-radius:6px;font-family:var(--mono);
+  background:rgba(242,180,94,.16);color:var(--warn);border:1px solid rgba(242,180,94,.3)}
+.tagok{font-size:9.5px;font-weight:700;letter-spacing:.08em;padding:3px 7px;border-radius:6px;font-family:var(--mono);
+  background:rgba(79,214,188,.14);color:var(--ok);border:1px solid rgba(79,214,188,.28)}
+
+/* ---------- 浏览器定制 ---------- */
+.edgewrap{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;align-items:start}
+.bmock{border-radius:var(--r-lg);overflow:hidden;padding:12px}
+.bmock .tabbar{display:flex;align-items:center;gap:9px;padding:0 4px 12px}
+.tab{height:30px;border-radius:10px;display:flex;align-items:center;gap:8px;padding:0 13px;font-size:11.5px;color:var(--ink-2);
+  background:rgba(255,255,255,.08);border:1px solid var(--stroke-2);max-width:190px}
+.tab.act{background:rgba(255,255,255,.16);color:var(--ink)}
+.tab i{width:12px;height:12px;border-radius:4px;background:linear-gradient(140deg,#A8C8EC,#2E7FC4);flex:none}
+.addtab{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;color:var(--ink-3);background:rgba(255,255,255,.06);font-size:15px}
+.omni{height:36px;border-radius:var(--r-pill);display:flex;align-items:center;gap:10px;padding:0 15px;margin:0 4px 12px;
+  background:rgba(255,255,255,.07);border:1px solid var(--stroke-2);font-size:12px;color:var(--ink-3);font-family:var(--mono)}
+.omni svg{width:13px;height:13px;stroke:var(--ok);fill:none;stroke-width:1.8}
+.omni .pgt{margin-left:auto;display:flex;gap:6px}
+.omni .pgt span{width:22px;height:22px;border-radius:7px;background:rgba(255,255,255,.07);display:grid;place-items:center;font-size:11px}
+.bpage{border-radius:var(--r-md);padding:24px 22px;min-height:332px;position:relative;overflow:hidden;
+  background:linear-gradient(150deg,#1B3350,#0E1D2E 62%,#101B28)}
+.bpage .bp1{font-size:17px;font-weight:650;letter-spacing:-.01em}
+.bpage .bp2{margin-top:9px;font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.7;max-width:430px}
+.bshort{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.bshort div{width:92px;height:58px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:10px;color:rgba(255,255,255,.6)}
+.bshort div span{width:18px;height:18px;border-radius:6px;background:linear-gradient(140deg,rgba(143,182,224,.92),rgba(46,127,196,.85))}
+.bpage .bdark{position:absolute;right:-40px;bottom:-60px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(46,127,196,.34),transparent 68%)}
+.opts{border-radius:var(--r-lg);padding:8px 6px}
+.orow{display:flex;align-items:center;gap:14px;padding:15px 14px;border-radius:var(--r-md);transition:.18s var(--ease)}
+.orow:hover{background:rgba(255,255,255,.055)}
+.orow .ot{flex:1;min-width:0}
+.orow h4{font-size:13.5px;font-weight:580;margin-bottom:5px}
+.orow p{font-size:11.5px;color:var(--ink-3);line-height:1.6}
+.sw{width:46px;height:27px;border-radius:var(--r-pill);flex:none;cursor:pointer;position:relative;transition:.24s var(--ease);
+  background:rgba(255,255,255,.12);border:1px solid var(--stroke-2)}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:19px;height:19px;border-radius:50%;background:rgba(255,255,255,.62);transition:.24s var(--ease)}
+.sw.on{background:linear-gradient(140deg,var(--sig-2),var(--sig));border-color:transparent;box-shadow:0 6px 18px -6px rgba(46,127,196,.9)}
+.sw.on::after{left:22px;background:#fff}
+.hint{display:flex;gap:11px;align-items:flex-start;padding:14px 16px;border-radius:var(--r-md);margin:8px 6px 6px}
+.hint svg{width:15px;height:15px;stroke:var(--info);fill:none;stroke-width:1.8;flex:none;margin-top:1px;stroke-linecap:round;stroke-linejoin:round}
+.hint p{font-size:11.5px;line-height:1.7;color:var(--ink-3)}
+
+/* ---------- 壁纸 ---------- */
+.seg{display:inline-flex;padding:4px;border-radius:var(--r-pill);background:rgba(255,255,255,.06);border:1px solid var(--stroke-2);gap:4px}
+.seg button{height:32px;padding:0 16px;border-radius:var(--r-pill);border:0;background:none;color:var(--ink-3);font:inherit;font-size:12.5px;
+  font-weight:560;cursor:pointer;transition:.2s var(--ease)}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--glass-3);color:var(--ink);box-shadow:var(--hi)}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:16px}
+.wcard{position:relative;aspect-ratio:16/10;border-radius:var(--r-md);overflow:hidden;cursor:pointer;
+  background:linear-gradient(150deg,hsl(var(--h2) 45% 26%),hsl(var(--h2) 55% 11%));
+  border:1px solid rgba(255,255,255,.1);box-shadow:0 14px 30px -20px rgba(3,9,14,.9)}
+.wcard img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s var(--ease)}
+.wcard:hover img{transform:scale(1.06)}
+.wcard .wov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,12,19,.84) 0%,rgba(6,12,19,.1) 46%,transparent 70%);
+  opacity:0;transition:.24s var(--ease);display:flex;align-items:flex-end;padding:11px}
+.wcard:hover .wov{opacity:1}
+.wcard .wn{font-size:11.5px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.wcard .wres{position:absolute;top:9px;right:9px;height:21px;padding:0 8px;border-radius:7px;display:flex;align-items:center;
+  font-size:10px;font-family:var(--mono);color:#fff;background:rgba(10,21,34,.62);border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.wcard .wset{position:absolute;left:11px;bottom:11px;height:30px;padding:0 13px;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;font-weight:600;color:var(--navy);background:linear-gradient(140deg,var(--sig-2),var(--sig));opacity:0;transform:translateY(6px);
+  transition:.24s var(--ease);box-shadow:0 10px 22px -10px rgba(46,127,196,.9)}
+.wcard:hover .wset{opacity:1;transform:none}
+.wcard .wset svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pager{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:24px}
+.pager button{min-width:34px;height:34px;padding:0 12px;border-radius:11px;background:rgba(255,255,255,.07);border:1px solid var(--stroke-2);
+  color:var(--ink-2);font:inherit;font-size:12.5px;cursor:pointer;transition:.18s var(--ease)}
+.pager button:hover{background:rgba(255,255,255,.16);color:var(--ink)}
+.pager button.on{background:linear-gradient(140deg,var(--sig-2),var(--sig));border-color:transparent;color:var(--navy);font-weight:700}
+.pager button:disabled{opacity:.35;cursor:not-allowed}
+
+/* ---------- 底部执行条 ---------- */
+.cmdbar{flex:none;height:70px;border-radius:var(--r-lg);display:flex;align-items:center;gap:18px;padding:0 16px;margin:0 0 16px;
+  animation:up .3s var(--ease)}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.cmdbar.hide{display:none}
+.cb-l{flex:none;display:flex;align-items:baseline;gap:8px;padding-left:6px;min-width:186px}
+.cb-l b{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.cb-l span{font-size:11.5px;color:var(--ink-3)}
+.cb-l .clr{margin-left:6px;font-size:11.5px;color:var(--ink-4);cursor:pointer;background:none;border:0;font:inherit;text-decoration:underline;
+  text-decoration-color:rgba(255,255,255,.24);text-underline-offset:3px}
+.cb-l .clr:hover{color:var(--ink-2)}
+.cb-o{display:flex;gap:8px;flex:1}
+.opt{height:34px;padding:0 14px;border-radius:var(--r-pill);cursor:pointer;font:inherit;font-size:12px;font-weight:540;color:var(--ink-3);
+  background:rgba(255,255,255,.05);border:1px solid var(--stroke-2);display:inline-flex;align-items:center;gap:8px;transition:.18s var(--ease)}
+.opt:hover{color:var(--ink)}
+.opt.on{background:rgba(46,127,196,.18);border-color:rgba(46,127,196,.48);color:var(--sig-2)}
+.opt i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4}
+.opt.on i{opacity:1}
+.cb-r{flex:none;display:flex;align-items:center;gap:10px}
+.running{display:flex;align-items:center;gap:12px;font-size:12.5px;color:var(--ink-2);font-family:var(--mono)}
+.running b{color:var(--sig-2)}
+
+/* ---------- 日志抽屉 ---------- */
+.scrim{position:fixed;inset:0;z-index:20;background:rgba(5,11,17,.52);opacity:0;pointer-events:none;transition:opacity .26s var(--ease)}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:16px;right:16px;bottom:16px;width:452px;z-index:21;border-radius:var(--r-xl);display:flex;flex-direction:column;
+  transform:translateX(calc(100% + 24px));transition:transform .34s var(--ease)}
+.drawer.on{transform:none}
+.dhead{flex:none;padding:20px 20px 14px;display:flex;align-items:center;gap:12px}
+.dhead h3{font-size:15px;font-weight:650}
+.dhead .dsub{font-size:11px;color:var(--ink-4);font-family:var(--mono)}
+.dfilters{flex:none;display:flex;gap:7px;padding:0 20px 14px;flex-wrap:wrap}
+.dlist{flex:1;overflow-y:auto;padding:0 14px 18px;display:flex;flex-direction:column;gap:8px}
+.dlist::-webkit-scrollbar{width:8px}
+.dlist::-webkit-scrollbar-thumb{background:rgba(255,255,255,.13);border-radius:8px}
+.ln{border-radius:var(--r-sm);padding:11px 13px;background:rgba(255,255,255,.045);border:1px solid var(--stroke-2)}
+.ln .lh{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.ln .lt{font-size:10.5px;font-family:var(--mono);color:var(--ink-4)}
+.ln .lm{font-size:10px;font-family:var(--mono);padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.07);color:var(--ink-3)}
+.ln .ll{margin-left:auto;width:6px;height:6px;border-radius:50%}
+.ln p{font-size:12px;line-height:1.6;color:var(--ink-2);word-break:break-all}
+.ln.warn p{color:#F7DCAE}
+.ln.err p{color:#FFC9C9}
+.ln.err{background:rgba(255,130,130,.07);border-color:rgba(255,130,130,.2)}
+
+/* ---------- 弹层 ---------- */
+.modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:30px;opacity:0;pointer-events:none;transition:opacity .24s var(--ease)}
+.modal.on{opacity:1;pointer-events:auto}
+.modal .mask{position:absolute;inset:0;background:rgba(5,11,17,.64);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.mbox{position:relative;width:440px;max-width:100%;max-height:86vh;overflow-y:auto;border-radius:26px;padding:26px;
+  transform:scale(.94) translateY(8px);transition:transform .28s var(--ease)}
+.modal.on .mbox{transform:none}
+.mbox h3{font-size:17px;font-weight:650;margin-bottom:11px;letter-spacing:-.01em}
+.mbox .mp{font-size:12.5px;line-height:1.75;color:var(--ink-2)}
+.mbox .mlist{margin:16px 0;display:flex;flex-direction:column;gap:9px}
+.mbox .mlist div{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--ink-2);line-height:1.6;
+  padding:11px 13px;border-radius:var(--r-sm);background:rgba(255,255,255,.045);border:1px solid var(--stroke-2)}
+.mbox .mlist svg{width:14px;height:14px;flex:none;margin-top:2px;stroke:var(--warn);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mbox .mact{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.mbox textarea{width:100%;min-height:104px;border-radius:var(--r-md);padding:13px;font:inherit;font-size:12px;line-height:1.6;resize:vertical;
+  background:rgba(255,255,255,.055);border:1px solid var(--stroke-2);color:var(--ink);outline:0;font-family:var(--mono)}
+.mbox textarea:focus{border-color:rgba(255,255,255,.26)}
+
+/* ---------- Toast ---------- */
+.toasts{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none}
+.toast{height:44px;padding:0 18px;border-radius:var(--r-pill);display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink);
+  animation:tin .26s var(--ease);box-shadow:var(--shadow),var(--hi)}
+.toast i{width:7px;height:7px;border-radius:50%;flex:none}
+@keyframes tin{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+
+@media (max-width:1180px){
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .hgauge{width:270px}
+  .edgewrap{grid-template-columns:1fr}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<div class="app">
+  <!-- 顶栏 -->
+  <header class="topbar glass">
+    <div class="brand">
+      <div class="mark">
+        <svg viewBox="0 0 24 24"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9L12 3Z"/><path d="M12 12v9M12 12 4 7.5M12 12l8-4.5"/></svg>
+      </div>
+      <div>
+        <div class="bname">开机部署</div>
+        <div class="bsub">Setup Assistant</div>
+      </div>
+    </div>
+    <label class="searchbox" id="searchWrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="m20 20-3.9-3.9"/></svg>
+      <input id="searchInput" placeholder="筛选当前页面的软件…" autocomplete="off" spellcheck="false">
+    </label>
+    <div class="tb-r">
+      <div class="stat-chip" id="statChip"><i class="pulse"></i><span id="statText">环境就绪</span></div>
+      <button class="ibtn" data-act="log" title="运行日志（Esc 关闭）">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        <span class="bdg" id="logBdg">0</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="railtrack"><nav class="rail glass" id="rail"></nav></div>
+    <main class="main" id="view"></main>
+  </div>
+
+  <footer class="cmdbar glass hide" id="cmdbar"></footer>
+</div>
+
+<!-- 日志抽屉 -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer glass" id="drawer">
+  <div class="dhead">
+    <div style="flex:1">
+      <h3>运行日志</h3>
+      <div class="dsub" id="dsub">0 条记录</div>
+    </div>
+    <button class="ibtn" data-act="logclear" title="清空">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>
+    </button>
+    <button class="ibtn" data-act="logclose" title="关闭">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="dfilters" id="dfilters"></div>
+  <div class="dlist" id="dlist"></div>
+</aside>
+
+<!-- 弹层容器 -->
+<div class="modal" id="modal"><div class="mask" data-act="dlgclose"></div><div class="mbox glass" id="mbox"></div></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ============================================================
+   数据（取自 kaiji-deploy 真实配置）
+   ============================================================ */
+const ICONS = {
+  layout:'<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',
+  terminal:'<rect x="2.6" y="4" width="18.8" height="16" rx="3"/><path d="m7 10 2.6 2.6L7 15.2M13 15.4h4"/>',
+  grid:'<rect x="3" y="3" width="8" height="8" rx="2.2"/><rect x="13" y="3" width="8" height="8" rx="2.2"/><rect x="3" y="13" width="8" height="8" rx="2.2"/><rect x="13" y="13" width="8" height="8" rx="2.2"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 3 2.6 15 0 18M12 3c-2.6 3-2.6 15 0 18"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z"/>',
+  sliders:'<path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.6" cy="9.4" r="1.7"/><path d="m4 17 4.6-4.4a2 2 0 0 1 2.7 0L17 18"/>',
+  play:'<path d="M7 5.2v13.6L19 12 7 5.2Z"/>',
+  retry:'<path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.4h-4.4"/>',
+  warn:'<path d="M12 4.5 21 20H3l9-15.5Z"/><path d="M12 10v4.2M12 17h.01"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 8h.01"/>',
+  check:'<path d="m4.5 12.6 5 5L19.5 7.6"/>',
+  tag:'<path d="M11.6 3.6H19a1.4 1.4 0 0 1 1.4 1.4v7.4a1.4 1.4 0 0 1-.4 1L12 21.4 2.6 12l8-8.4Z"/><path d="M16.6 7.4h.01"/>',
+  shield:'<path d="M12 3.2 19 6v5.4c0 4.3-2.9 7.6-7 9.4-4.1-1.8-7-5.1-7-9.4V6l7-2.8Z"/>',
+  undo:'<path d="M4 10h9.6a5.4 5.4 0 0 1 0 10.8H8"/><path d="m7.6 6.4L4 10l3.6 3.6"/>',
+  refresh:'<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4.6h-4.6"/>',
+  layers:'<path d="m12 3 8.5 4.6L12 12.2 3.5 7.6 12 3Z"/><path d="m4 12.4 8 4.3 8-4.3M4 16.6l8 4.3 8-4.3"/>',
+  key:'<circle cx="8.4" cy="8.4" r="4.4"/><path d="m11.6 11.6 8 8M17 17l1.8-1.8M14.6 14.6l1.6-1.6"/>',
+  pause:'<rect x="6.5" y="4.5" width="4" height="15" rx="1.6"/><rect x="13.5" y="4.5" width="4" height="15" rx="1.6"/>',
+  bolt:'<path d="M13.4 2.6 5 13.4h5.4L9.8 21.4 18.4 10H13l.4-7.4Z"/>',
+  set:'<path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M19.4 12c0-.5-.05-1-.15-1.4l2-1.5-1.9-3.3-2.3.9a7.4 7.4 0 0 0-2.4-1.4L14.4 2.6h-3.8l-.25 2.7a7.4 7.4 0 0 0-2.4 1.4l-2.3-.9-1.9 3.3 2 1.5a7.4 7.4 0 0 0 0 2.8l-2 1.5 1.9 3.3 2.3-.9a7.4 7.4 0 0 0 2.4 1.4l.25 2.7h3.8l.25-2.7a7.4 7.4 0 0 0 2.4-1.4l2.3.9 1.9-3.3-2-1.5c.1-.4.15-.9.15-1.4Z"/>'
+};
+const svg = (n,s=0) => '<svg viewBox="0 0 24 24"'+(s?' style="width:'+s+'px;height:'+s+'px"':'')+'>'+(ICONS[n]||'')+'</svg>';
+
+const MODULES = [
+  { id:'overview', label:'概览',     icon:'layout',   sub:'新机开机到可用环境 · 勾选式批量部署' },
+  { id:'devenv',   label:'开发环境', icon:'terminal', sub:'SDK 与运行时 · 装完自动追加系统 PATH' },
+  { id:'daily',    label:'日常软件', icon:'grid',     sub:'官网 / GitHub 最新版 · 静默安装到指定磁盘' },
+  { id:'proxy',    label:'翻墙软件', icon:'globe',    sub:'代理内核与工作台 · 跟随最新 Release' },
+  { id:'edge',     label:'浏览器定制', icon:'compass', sub:'收藏夹 · 深色外观 · 下载位置（写前自动备份）' },
+  { id:'tools',    label:'系统工具', icon:'sliders',  sub:'系统级操作：需管理员权限，写注册表前先确认' },
+  { id:'wall',     label:'壁纸',     icon:'image',    sub:'在线图库与本机素材 · 点击应用到桌面' }
+];
+
+/* 软件清单：h=品牌主色相 | mb=体积 | src=来源类型 */
+const APPS = [
+  /* 开发环境 */
+  { id:'go',    cat:'devenv', name:'Go',      mono:'Go', h:190, mb:78,  src:'官网直链',     sdk:'go1.23 windows/amd64' },
+  { id:'git',   cat:'devenv', name:'Git',     mono:'Git',h:14,  mb:62,  src:'GitHub Release', sdk:'git-for-windows/git' },
+  { id:'python',cat:'devenv', name:'Python',  mono:'Py', h:210, mb:28,  src:'官网直链',     sdk:'python.org / 3.12' },
+  { id:'node',  cat:'devenv', name:'Node.js', mono:'JS', h:96,  mb:30,  src:'官网直链',     sdk:'nodejs.org / LTS' },
+  { id:'ffmpeg',cat:'devenv', name:'FFmpeg',  mono:'FF', h:188, mb:120, src:'GitHub Release', sdk:'解压到 C:\\ffmpeg' },
+  /* 日常软件 */
+  { id:'qq',          cat:'daily', name:'QQ',           mono:'QQ', h:205, mb:340, src:'官网直链' },
+  { id:'wechat',      cat:'daily', name:'微信',         mono:'微', h:145, mb:420, src:'官网直链' },
+  { id:'wechat-ime',  cat:'daily', name:'微信输入法',   mono:'输', h:215, mb:96,  src:'官网直链' },
+  { id:'baidu-netdisk',cat:'daily',name:'百度网盘',     mono:'百', h:220, mb:180, src:'官网直链' },
+  { id:'netease-music',cat:'daily',name:'网易云音乐',   mono:'云', h:358, mb:210, src:'内置本地' },
+  { id:'workbuddy',   cat:'daily', name:'workbuddy',    mono:'WB', h:258, mb:260, src:'官网直链' },
+  { id:'chrome',      cat:'daily', name:'Chrome',       mono:'Ch', h:45,  mb:120, src:'官网直链' },
+  { id:'obs',         cat:'daily', name:'OBS Studio',   mono:'OB', h:200, mb:150, src:'GitHub Release' },
+  { id:'localsend',   cat:'daily', name:'LocalSend',    mono:'LS', h:172, mb:42,  src:'GitHub Release' },
+  { id:'wujie',       cat:'daily', name:'无界趣连 2.0', mono:'无', h:25,  mb:88,  src:'官网直链' },
+  { id:'vlc',         cat:'daily', name:'VLC 播放器',   mono:'VL', h:30,  mb:64,  src:'官网直链' },
+  { id:'sunlogin',    cat:'daily', name:'向日葵',       mono:'向', h:212, mb:78,  src:'官网直链', degrade:'wizard' },
+  { id:'todesk',      cat:'daily', name:'ToDesk',       mono:'TD', h:275, mb:92,  src:'官网直链' },
+  { id:'geek',        cat:'daily', name:'Geek 卸载',    mono:'Ge', h:200, mb:4,   src:'官网直链', note:'下载后落到桌面' },
+  { id:'utools',      cat:'daily', name:'uTools',       mono:'uT', h:250, mb:110, src:'内置本地' },
+  { id:'bitbrowser',  cat:'daily', name:'比特浏览器',   mono:'比', h:285, mb:230, src:'官网直链', degrade:'browser', manual:'官网下载强制图形验证码，需在弹出的官网中手动完成验证' },
+  { id:'dmgh',        cat:'daily', name:'动漫共和国',   mono:'动', h:340, mb:150, src:'内置本地', note:'解压绿色包' },
+  { id:'idm-crack',   cat:'daily', name:'IDM 破解补丁', mono:'ID', h:8,   mb:2,   src:'内置本地', note:'随 IDM 一起落桌面' },
+  { id:'idm',         cat:'daily', name:'IDM',          mono:'IDM',h:205, mb:26,  src:'官网直链', degrade:'wizard' },
+  { id:'lanshan',     cat:'daily', name:'蓝山看图王',   mono:'蓝', h:195, mb:64,  src:'内置本地', degrade:'wizard', manual:'安装向导不支持静默参数，需人工完成' },
+  /* 翻墙软件 */
+  { id:'clash-verge', cat:'proxy', name:'Clash Verge',  mono:'CV', h:225, mb:38,  src:'GitHub Release' },
+  { id:'yingce',      cat:'proxy', name:'影策',         mono:'影', h:280, mb:120, src:'GitHub Release', note:'解压绿色包' },
+  { id:'workdaddy',   cat:'proxy', name:'WorkDaddy',    mono:'WD', h:16,  mb:96,  src:'GitHub Release' },
+  { id:'wb-panel',    cat:'proxy', name:'workbuddy 辅助工具', mono:'WP', h:195, mb:52, src:'GitHub Release', note:'解压绿色包' }
+];
+
+const TOOLS = [
+  { id:'t1', name:'去除快捷方式角标', ic:'tag',      desc:'注册表 Shell Icons 29 → 空白图标并刷新', risk:false },
+  { id:'t2', name:'去除小盾牌',       ic:'shield',   desc:'Shell Icons 29 + 77 → 空白图标并刷新', risk:false },
+  { id:'t3', name:'恢复快捷方式角标', ic:'undo',     desc:'删除注册表 Shell Icons 29 并刷新图标缓存', risk:true, confirm:'将删除注册表项并重启 explorer.exe。' },
+  { id:'t4', name:'恢复小盾牌',       ic:'undo',     desc:'删除 Shell Icons 29 + 77 并刷新', risk:true, confirm:'将删除注册表项并重启 explorer.exe。' },
+  { id:'t5', name:'新图标缓存',       ic:'refresh',  desc:'重启 explorer + 删 IconCache/thumbcache + 清托盘图标记忆', risk:true, confirm:'会重启资源管理器，桌面与任务栏会短暂消失。' },
+  { id:'t6', name:'磁贴美化小工具',   ic:'layers',   desc:'启动本地 磁贴美化小工具 v4.1.1（含辅助小工具）', risk:false },
+  { id:'t7', name:'系统激活',         ic:'key',      desc:'以管理员权限启动本地 系统激活.exe', risk:true, confirm:'该工具会修改系统激活状态，请确认来源可信。' },
+  { id:'t8', name:'禁用 Windows 更新', ic:'pause',   desc:'启动 Windows Update Blocker，在工具内选择禁用', risk:true, confirm:'将停止并禁用 Windows Update 相关服务。' },
+  { id:'t9', name:'恢复 Windows 更新', ic:'refresh', desc:'启动 Windows Update Blocker，在工具内选择恢复服务', risk:false }
+];
+
+/* 真实本机壁纸素材（相对路径引用 开机部署/壁纸 目录） */
+const WALL_LOCAL = ['1.jpg','2.png','3.jpg','4.png','5.jpg','6.png','7.jpg','8.png','9.jpg','10.png','11.png','12.jpg','13.jpg','14.jpg','15.jpg','16.jpg','17.jpg','18.jpg','19.jpg','20.jpg','21.jpg','22.jpeg','23.jpeg','24.png','25.jpg','26.jpg','27.jpg','28.jpg','29.jpg','30.jpg','31.jpg','32.jpg','33.jpg','34.jpg','35.jpg','36.png','37.png','38.png','2023苹果发布会黑色背景桌面壁纸_彼岸壁纸.jpg','catalina岛风景壁纸_彼岸壁纸.jpg','一个人 绿草地 星空 星球 梦想 唯美风景桌面壁纸_彼岸壁纸.jpg','云 奇观 一棵树 湖泊倒影 风景桌面壁纸_彼岸壁纸.jpg','云 黑暗 光 风景壁纸_彼岸壁纸.jpg','头像.jpeg','小海狸loopy高清电脑壁纸_彼岸壁纸.jpg','微软 win 简约黑色背景电脑壁纸_彼岸壁纸.jpg','海棠花 月亮 唯美风景桌面壁纸_彼岸壁纸.jpg','灰色大海风景桌面壁纸_彼岸壁纸.jpg','蓝天 蒙眼女孩 白色衣服 动漫壁纸_彼岸壁纸.jpg','迷失山谷 高清2k风景桌面壁纸_彼岸壁纸.jpg','黑色背景 动漫 插画 深色系风景 窗口 树 宇宙 星球 行星 高清壁纸_彼岸壁纸.jpg'];
+
+const NB_CATS = [ {n:'4K 风景',h:196},{n:'4K 动漫',h:286},{n:'4K 游戏',h:320},{n:'4K 影视',h:16},
+                  {n:'4K 动物',h:120},{n:'4K 汽车',h:212},{n:'4K 科技',h:250},{n:'4K 唯美',h:340} ];
+const NB_TITLES = ['雪山湖泊 4K 极简','城市夜景 霓虹长曝','森林晨雾 治愈系','深海蓝 抽象流体','星空银河 沙漠戈壁','极光山谷 冷色系',
+                   '雨夜街灯 胶片感','云海之上 日出','北极冰原 纯白','火山熔岩 暖色','竹林小径 中式留白','旧金山金门大桥 夜景'];
+const WH_TITLES = ['mountain-lake-4k','neon-cityscape','abstract-fluid-dark','aurora-night','retro-grid-sunset','forest-fog-morning',
+                   'deep-space-nebula','minimal-desert-dune'];
+
+/* ============================================================
+   状态
+   ============================================================ */
+const S = {
+  page:'overview', sel:new Set(), q:'', f:'all',
+  state:{}, prog:{}, logs:[], logOpen:false, logF:'all',
+  run:false, cancel:false,
+  wallTab:'local', wallCat:0, wallPage:1, wallAll:false, cookieOk:false, vlcRetried:false,
+  opts:{ shortcut:true, autostart:false, proxy:false },
+  edge:{ fav:true, dark:true, dldesk:false },
+  dlg:null, onboard:true
+};
+APPS.forEach(a => S.state[a.id] = 'idle');
+S.state.wechat='done'; S.state.qq='done'; S.state.chrome='done'; S.state.node='done';
+S.state.bitbrowser='manual'; S.state.lanshan='manual'; S.state.vlc='failed';
+
+const SRC_OF = { 'done':'已装', 'manual':'需人工', 'failed':'失败' };
+const $ = s => document.querySelector(s);
+const cardOf = id => document.querySelector('[data-card="'+id+'"]');
+const appsOf = cat => APPS.filter(a => a.cat === cat);
+const catApps = cat => appsOf(cat).filter(a => !S.q || a.name.toLowerCase().includes(S.q.toLowerCase()));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sizeText = mb => mb >= 1024 ? (mb/1024).toFixed(1)+' GB' : mb+' MB';
+const hue = h => '--h:'+h+';--h2:'+(h+16);
+
+/* ============================================================
+   日志 / Toast
+   ============================================================ */
+function log(level, mod, msg){
+  const d = new Date();
+  S.logs.push({ t:[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':'),
+                level, mod, msg });
+  if (S.logs.length > 400) S.logs.shift();
+  $('#logBdg').textContent = S.logs.length;
+  if (S.logOpen) renderDrawer();
+}
+function toast(msg, kind='info'){
+  const c = { info:'var(--info)', ok:'var(--ok)', warn:'var(--warn)', err:'var(--err)', sig:'var(--sig)' }[kind];
+  const el = document.createElement('div');
+  el.className = 'toast glass';
+  el.innerHTML = '<i style="background:'+c+'"></i>'+esc(msg);
+  $('#toasts').appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s,transform .3s'; el.style.opacity='0'; el.style.transform='translateY(8px)';
+    setTimeout(()=>el.remove(),320) }, 2600);
+}
+
+/* ============================================================
+   渲染：顶栏 / 侧轨
+   ============================================================ */
+const SEARCHABLE = ['devenv','daily','proxy','tools','wall'];
+function syncTop(){
+  const running = S.run;
+  $('#statChip').classList.toggle('run', running);
+  const todo = Object.values(S.state).filter(v=>v==='idle').length;
+  $('#statText').textContent = running ? '部署进行中' : (todo ? '环境就绪 · '+todo+' 项待装' : '环境已就绪');
+  $('#searchWrap').classList.toggle('hide', !SEARCHABLE.includes(S.page));
+  $('#logBdg').textContent = S.logs.length;
+}
+function renderRail(){
+  const cnt = { devenv:5, daily:20, proxy:4 };
+  $('#rail').innerHTML = MODULES.map(m => {
+    const c = cnt[m.id] !== undefined ? cnt[m.id] : '';
+    return '<div class="ritem'+(S.page===m.id?' on':'')+'" data-act="nav" data-id="'+m.id+'" title="'+esc(m.label)+'">'+
+             svg(m.icon)+'<span class="rl">'+esc(m.label)+'</span><span class="rc">'+c+'</span>'+
+           '</div>';
+  }).join('');
+}
+
+/* ============================================================
+   渲染：概览
+   ============================================================ */
+function pageOverview(){
+  const all = APPS, total = all.length;
+  const done = all.filter(a=>S.state[a.id]==='done').length;
+  const manual = all.filter(a=>S.state[a.id]==='manual').length;
+  const failed = all.filter(a=>S.state[a.id]==='failed').length;
+  const idle = total - done - manual - failed;
+  const C = 2*Math.PI*80, seg = (n)=> C*n/total;
+  const a1 = seg(done), a2 = seg(manual+failed), a3 = seg(idle);
+  const off1 = 0, off2 = -a1, off3 = -(a1+a2);
+
+  const sys = [
+    { lb:'SYSTEM',  vl:'Windows 11', sb:'23H2 · 22631.4890 · 管理员', tick:null },
+    { lb:'CPU',     vl:'12 核 20 线程', sb:'Intel Core i7-12700 · 2.1 GHz', tick:58 },
+    { lb:'MEMORY',  vl:'32 GB', sb:'已用 13.1 GB · 空闲 18.9 GB', tick:41 },
+    { lb:'STORAGE', vl:'C: 98 GB 可用', sb:'共 476 GB · 已用 79%', tick:79 }
+  ];
+  const modRows = MODULES.filter(m=>['devenv','daily','proxy'].includes(m.id)).map(m=>{
+    const list = appsOf(m.id);
+    const d = list.filter(a=>S.state[a.id]==='done').length;
+    return '<div class="mrow" data-act="nav" data-id="'+m.id+'">'+
+      '<span class="mic">'+svg(m.icon)+'</span>'+
+      '<span class="mn">'+esc(m.label)+'</span>'+
+      '<span class="ms">'+esc(m.sub)+'</span>'+
+      '<span class="track"><i style="width:'+(list.length? Math.round(d/list.length*100):0)+'%"></i></span>'+
+      '<span class="mc">'+d+' / '+list.length+'</span></div>';
+  }).join('');
+
+  return '<div class="pg">'+
+    '<section class="hero glass">'+
+      '<div class="hcopy">'+
+        '<div class="hchips">'+
+          '<span class="chip-x"><i></i>DESKTOP-8F3A2C</span>'+
+          '<span class="chip-x">Windows 11 · 23H2</span>'+
+          '<span class="chip-x">共 '+total+' 个软件模块</span>'+
+        '</div>'+
+        '<h1>'+idle+' 项待部署，<em>'+done+' 项已就绪</em></h1>'+
+        '<p>勾选需要的软件，一次跑完 <b style="color:var(--ink-2)">解析 → 下载 → 静默安装 → 校验</b>。所有下载源在开始前已核验可达，写入前自动备份。</p>'+
+        '<div class="hact">'+
+          '<button class="btn-p" data-act="nav" data-id="devenv">'+svg('play')+'开始部署</button>'+
+          '<button class="btn-g" data-act="log">'+svg('info')+'查看运行日志</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="hgauge">'+
+        '<div class="ringwrap">'+
+          '<svg viewBox="0 0 196 196">'+
+            '<circle cx="98" cy="98" r="80" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="11"/>'+
+            '<circle cx="98" cy="98" r="80" fill="none" stroke="var(--ok)" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+a1+' '+(C-a1)+'" stroke-dashoffset="'+off1+'"/>'+
+            '<circle cx="98" cy="98" r="80" fill="none" stroke="var(--warn)" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+a2+' '+(C-a2)+'" stroke-dashoffset="'+off2+'"/>'+
+            '<circle cx="98" cy="98" r="80" fill="none" stroke="var(--sig)" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+a3+' '+(C-a3)+'" stroke-dashoffset="'+off3+'"/>'+
+          '</svg>'+
+          '<div class="rv"><b>'+idle+'</b><span>待部署</span></div>'+
+        '</div>'+
+        '<div class="legend">'+
+          '<div class="lg"><i style="background:var(--sig)"></i>待装<b>'+idle+'</b></div>'+
+          '<div class="lg"><i style="background:var(--ok)"></i>已就绪<b>'+done+'</b></div>'+
+          '<div class="lg"><i style="background:var(--warn)"></i>需人工<b>'+manual+'</b></div>'+
+          '<div class="lg"><i style="background:var(--err)"></i>失败<b>'+failed+'</b></div>'+
+        '</div>'+
+      '</div>'+
+    '</section>'+
+
+    '<div class="sect"><h2>系统信息</h2><p>开机自动采集 · 只读</p></div>'+
+    '<div class="grid4">'+ sys.map(s =>
+      '<div class="statcard glass-2">'+
+        '<div class="lb">'+s.lb+'</div><div class="vl">'+s.vl+'</div><div class="sb">'+s.sb+'</div>'+
+        (s.tick!==null ? '<div class="tick"><i style="width:'+s.tick+'%"></i></div>' : '')+
+      '</div>').join('') +'</div>'+
+
+    '<div class="sect"><h2>模块完成度</h2><p>点击进入对应模块</p>'+
+      '<div class="rt"><span class="chip-x">'+done+' / '+total+' 已就绪</span></div></div>'+
+    '<div class="panel glass-2">'+modRows+'</div>'+
+  '</div>';
+}
+
+/* ============================================================
+   渲染：软件清单页（开发环境 / 日常软件 / 翻墙软件）
+   ============================================================ */
+function cardHTML(a){
+  const st = S.state[a.id], p = S.prog[a.id] || 0;
+  const running = ['checking','downloading','installing','verifying'].includes(st);
+  const pill = running ? '' :
+    st==='done'   ? '<span class="spill"><i class="i-done"></i>已装</span>' :
+    st==='manual' ? '<span class="spill"><i class="i-manual"></i>需人工</span>' :
+    st==='failed' ? '<span class="spill"><i class="i-failed"></i>失败</span>' : '';
+  const dot = st==='done' ? 'i-done' : st==='manual' ? 'i-manual' : st==='failed' ? 'i-failed' : running ? 'i-run' : 'i-idle';
+  const stText = { checking:'解析中', downloading:'下载中', installing:'安装中', verifying:'校验中', manual:'需人工', failed:'失败', done:'已装' }[st] || '';
+  const meta = running ? stText+' '+Math.round(p)+'%'
+             : st==='done' ? '已就绪 · '+sizeText(a.mb)
+             : st==='manual' ? '需人工完成 · 见日志'
+             : st==='failed' ? '下载中断 · 可重试'
+             : sizeText(a.mb)+' · '+a.src;
+  const actIcon = st==='done' ? 'refresh' : st==='failed' ? 'retry' : 'play';
+  return '<div class="card'+(S.sel.has(a.id)?' on':'')+'" data-card="'+a.id+'">'+
+    '<div class="cover" style="'+hue(a.h)+'">'+
+      '<span class="gl"></span>'+
+      '<span class="mono2'+(a.mono.length>2?' sm':'')+'">'+esc(a.mono)+'</span>'+
+      pill+
+      '<span class="selbox">'+svg('check')+'</span>'+
+      '<button class="mini" data-act="only" data-id="'+a.id+'" title="单独执行">'+svg(actIcon)+'</button>'+
+      (running ? '<div class="cprog"><i style="width:'+p+'%"></i></div>' : '')+
+    '</div>'+
+    '<div class="cbody"><h4>'+esc(a.name)+'</h4>'+
+      '<p class="cmeta"><i class="'+dot+'"></i><span>'+esc(meta)+'</span></p>'+
+    '</div></div>';
+}
+function patchCard(id){
+  const el = cardOf(id), a = APPS.find(x=>x.id===id);
+  if (!el || !a) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = cardHTML(a);
+  el.replaceWith(tmp.firstElementChild);
+}
+function patchProg(id){
+  const el = cardOf(id); if (!el) return;
+  const bar = el.querySelector('.cprog i');
+  if (bar) bar.style.width = (S.prog[id]||0)+'%';
+  const sp = el.querySelector('.cmeta span');
+  if (sp) sp.textContent = '下载中 '+Math.round(S.prog[id]||0)+'%';
+}
+
+/* 清单页 */
+const FILTERS = [['all','全部'],['idle','待装'],['manual','需人工'],['failed','失败'],['done','已装']];
+function countBy(cat,k){
+  const list = appsOf(cat);
+  return k==='all' ? list.length : list.filter(a=>S.state[a.id]===k).length;
+}
+function listPage(cat){
+  const m = MODULES.find(x=>x.id===cat);
+  const all = appsOf(cat);
+  const base = catApps(cat);
+  const shown = base.filter(a => S.f==='all' || S.state[a.id]===S.f);
+  const selN = all.filter(a=>S.sel.has(a.id)).length;
+  const deg = all.filter(a=>a.degrade).length;
+  return '<div class="pg">'+
+    '<div class="sect"><h2>'+esc(m.label)+'</h2><p>'+esc(m.sub)+'</p>'+
+      '<div class="rt"><span class="chip-x">'+(selN?('已选 '+selN+' / '+base.length):(base.length+' 个条目'))+'</span></div></div>'+
+    '<div class="chips">'+ FILTERS.map(f=>{
+      const n = countBy(cat,f[0]);
+      const color = { idle:'var(--sig)', manual:'var(--warn)', failed:'var(--err)', done:'var(--ok)' }[f[0]];
+      return '<button class="chip'+(S.f===f[0]?' on':'')+'" data-act="filter" data-id="'+f[0]+'">'+
+             (color?'<i style="background:'+color+'"></i>':'')+f[1]+'<b>'+n+'</b></button>';
+    }).join('') +'</div>'+
+    '<div class="cards">'+ (shown.length ? shown.map(cardHTML).join('') : '<div class="cnone">没有匹配的条目</div>') +'</div>'+
+    (cat==='proxy' ? '<div class="note glass-2">'+svg('info')+
+      '<p><b>下载走应用内代理加速</b> —— 勾选任一代理工具后，底部执行条会出现「代理加速」参数，所有下载请求经本机代理端口发出。需要本机已配置可用代理。</p></div>' : '')+
+    (deg ? '<div class="note glass-2">'+svg('warn')+
+      '<p>本页有 <b>'+deg+' 项</b>官网不提供静默参数或需图形验证：将自动降级为浏览器辅助安装，完成后在卡片上标记 <b>需人工</b>，日志里给出具体步骤。</p></div>' : '')+
+  '</div>';
+}
+
+/* 概览：模块完成度点击进入 */
+/* ---- 浏览器定制 ---- */
+function edgePage(){
+  const rows = [
+    { k:'fav',    t:'导入收藏夹',       d:'解析桌面 Edge收藏夹.html（Netscape 格式）写入收藏夹栏；栏外链接写入其他收藏夹 · 已识别 128 个链接 / 9 个文件夹' },
+    { k:'dark',   t:'深色外观',         d:'写 Preferences: browser.theme.user_color_scheme = 2，重启 Edge 生效' },
+    { k:'dldesk', t:'下载位置改为桌面', d:'写 Preferences: download.default_directory = 桌面路径' }
+  ];
+  return '<div class="pg">'+
+    '<div class="sect"><h2>浏览器定制</h2><p>写前自动备份 Preferences 与收藏夹文件</p>'+
+      '<div class="rt"><button class="btn-g" data-act="applyedge">'+svg('check')+'应用全部设置</button></div></div>'+
+    '<div class="edgewrap">'+
+      '<div class="bmock glass-2">'+
+        '<div class="tabbar">'+
+          '<span class="tab act"><i></i>新建标签页</span>'+
+          '<span class="tab"><i></i>工作台</span>'+
+          '<span class="addtab">+</span>'+
+        '</div>'+
+        '<div class="omni">'+svg('check')+'edge://settings/appearance<span class="pgt"><span>‹</span><span>›</span><span>⟳</span></span></div>'+
+        '<div class="bpage">'+
+          '<div class="bdark"></div>'+
+          '<div class="bp1">已按当前配置渲染</div>'+
+          '<div class="bp2">深色外观、收藏夹栏、下载目录三项为写入 Edge 配置文件的 <b>应用级设置</b>，不上网、不改系统、可逐项回滚。</div>'+
+          '<div class="bshort">'+
+            '<div><span></span>收藏夹栏</div>'+
+            '<div><span></span>深色主题</div>'+
+            '<div><span></span>下载到桌面</div>'+
+            '<div><span></span>新标签页</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="opts glass-2">'+
+        rows.map(r=>'<div class="orow"><div class="ot"><h4>'+r.t+'</h4><p>'+r.d+'</p></div>'+
+          '<div class="sw'+(S.edge[r.k]?' on':'')+'" data-act="edgesw" data-id="'+r.k+'"></div></div>').join('')+
+        '<div class="hint">'+svg('info')+'<p>执行前请先关闭 Edge；若进程仍在运行，将先请求关闭再写入。所有写入前都会把原文件复制到 <b style="color:var(--ink-2)">备份目录</b>。</p></div>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+
+/* ---- 系统工具 ---- */
+function toolsPage(){
+  const q = S.q.toLowerCase();
+  const list = TOOLS.filter(t => !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
+  return '<div class="pg">'+
+    '<div class="sect"><h2>系统工具</h2><p>'+MODULES.find(m=>m.id==='tools').sub+'</p>'+
+      '<div class="rt"><span class="chip-x">'+list.length+' / 9 项</span></div></div>'+
+    '<div class="tiles">'+ list.map(t =>
+      '<div class="tile glass-2" data-act="tool" data-id="'+t.id+'">'+
+        '<div class="tic">'+svg(t.ic)+'</div>'+
+        '<h4>'+esc(t.name)+(t.risk?'<span class="tagrisk">需确认</span>':'<span class="tagok">可逆</span>')+'</h4>'+
+        '<p>'+esc(t.desc)+'</p>'+
+        '<div class="tf"><span class="go">'+svg('play',12)+'执行</span></div>'+
+      '</div>').join('') +'</div>'+
+    '<div class="note glass-2">'+svg('warn')+
+      '<p>带 <b>需确认</b> 标记的工具会写注册表或重启资源管理器，执行前弹出二次确认；所有操作均提供对应的还原入口。</p></div>'+
+  '</div>';
+}
+
+/* ---- 壁纸 ---- */
+const WALL_REAL_BASE = '../壁纸/';
+function wallName(f){ return f.replace(/\.[a-z0-9]+$/i,'').replace(/_彼岸壁纸$/,''); }
+function wallTabLocal(){
+  const list = WALL_LOCAL.filter(f => !S.q || wallName(f).toLowerCase().includes(S.q.toLowerCase()));
+  const show = S.wallAll ? list : list.slice(0, 24);
+  return '<div class="wgrid">'+ show.map((f,i) =>
+    '<div class="wcard" style="'+hue([196,28,210,160,286,120,340,44][i%8])+'" data-act="wallset" data-id="'+esc(f)+'" title="点击设为桌面壁纸">'+
+      '<img src="'+encodeURI(WALL_REAL_BASE+f)+'" alt="'+esc(wallName(f))+'" loading="lazy" onload="var r=this.parentNode.querySelector(\'.wres\'); if(r) r.textContent=this.naturalWidth+\'x\'+this.naturalHeight" onerror="this.style.display=\'none\'">'+
+      '<span class="wres">'+['3840x2160','2560x1440','1920x1080'][i%3]+'</span>'+
+      '<div class="wov"><span class="wn">'+esc(wallName(f))+'</span></div>'+
+      '<span class="wset">'+svg('check')+'设为壁纸</span>'+
+    '</div>').join('') +'</div>'+
+    '<div class="pager">'+ (list.length>24
+      ? '<button data-act="wallall">'+(S.wallAll?('收起，仅看前 24 张'):('展开全部 '+list.length+' 张本机素材'))+'</button>'
+      : '<span style="font-size:12px;color:var(--ink-4)">共 '+list.length+' 张</span>') +'</div>';
+}
+function wallTabOnline(){
+  const per = 12, cat = NB_CATS[S.wallCat];
+  const start = (S.wallPage-1)*per;
+  const titles = NB_TITLES.map((_,i)=>NB_TITLES[(i+start)%NB_TITLES.length]);
+  const cards = titles.map((t,i) =>
+    '<div class="wcard" style="'+hue(cat.h+(i*7))+'" data-act="wallset" data-id="'+esc(t)+'" title="下载原图并设为桌面壁纸">'+
+      '<span class="wres">3840x2160</span>'+
+      '<div class="wov"><span class="wn">'+esc(t)+'</span></div>'+
+      '<span class="wset">'+svg('check')+'下载并设为壁纸</span>'+
+      '<div style="position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.3);font-size:11px;font-family:var(--mono)">'+
+        esc(cat.n)+' · P'+S.wallPage+'-'+(i+1)+'</div>'+
+    '</div>').join('');
+  return '<div class="chips" style="margin-bottom:16px">'+ NB_CATS.map((c,i)=>
+      '<button class="chip'+(S.wallCat===i?' on':'')+'" data-act="wallcat" data-id="'+i+'"><i style="background:hsl('+c.h+' 70% 55%)"></i>'+c.n+'</button>').join('') +'</div>'+
+    '<div class="wgrid">'+cards+'</div>'+
+    '<div class="pager">'+
+      '<button data-act="wallpage" data-id="p0" '+((S.wallPage<=1)?'disabled':'')+'>上一页</button>'+
+      [1,2,3].map(p=>'<button class="'+(S.wallPage===p?'on':'')+'" data-act="wallpage" data-id="'+p+'">'+p+'</button>').join('')+
+      '<button data-act="wallpage" data-id="p+">下一页</button>'+
+    '</div>'+
+    '<div class="note glass-2">'+svg('info')+'<p>彼岸图网原图下载需要站点登录 Cookie：点击右上角 <b>配置 Cookie</b> 粘贴浏览器开发者工具中的 Cookie 即可；未配置时仅能看缩略图。</p></div>';
+}
+function wallTabWH(){
+  return '<div class="wgrid">'+ WH_TITLES.map((t,i)=>
+      '<div class="wcard" style="'+hue(230+i*9)+'" data-act="wallset" data-id="'+esc(t)+'" title="下载原图并设为桌面壁纸">'+
+        '<span class="wres">'+[3840,5120,2560,3840,3440,1920,3840,2560][i]+'x'+[2160,2880,1440,2160,1440,1080,2160,1440][i]+'</span>'+
+        '<div class="wov"><span class="wn">wallhaven-'+esc(t)+'</span></div>'+
+        '<span class="wset">'+svg('check')+'下载并设为壁纸</span>'+
+        '<div style="position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.3);font-size:11px;font-family:var(--mono)">SFW · hot · atleast 1080p</div>'+
+      '</div>').join('') +'</div>'+
+    '<div class="note glass-2">'+svg('info')+'<p>Wallhaven 走应用内代理加速，<b>无需 Cookie</b>；仅抓取 SFW 且 ≥1920x1080 的壁纸。</p></div>';
+}
+function wallPage(){
+  const tabs = [['local','本机素材'],['online','彼岸图网'],['wh','Wallhaven']];
+  const body = S.wallTab==='local' ? wallTabLocal() : S.wallTab==='online' ? wallTabOnline() : wallTabWH();
+  return '<div class="pg">'+
+    '<div class="sect"><h2>壁纸</h2><p>'+MODULES.find(m=>m.id==='wall').sub+'</p>'+
+      '<div class="rt">'+
+        '<div class="seg">'+ tabs.map(t=>'<button class="'+(S.wallTab===t[0]?' on':'')+'" data-act="walltab" data-id="'+t[0]+'">'+t[1]+'</button>').join('') +'</div>'+
+        (S.wallTab==='online' ? '<button class="btn-g" data-act="cookie">'+svg('key',14)+'配置 Cookie</button>' : '')+
+      '</div></div>'+
+    body+
+  '</div>';
+}
+
+function renderView(){
+  const v = $('#view');
+  const html = S.page==='overview' ? pageOverview()
+    : S.page==='edge' ? edgePage()
+    : S.page==='tools' ? toolsPage()
+    : S.page==='wall' ? wallPage()
+    : listPage(S.page);
+  v.innerHTML = html;
+}
+/* ============================================================
+   底部执行条
+   ============================================================ */
+function paintBar(){
+  const bar = $('#cmdbar');
+  const show = ['devenv','daily','proxy'].includes(S.page) || S.run;
+  bar.classList.toggle('hide', !show);
+  if (!show) return;
+  const sel = APPS.filter(a=>S.sel.has(a.id));
+  const runnable = sel.filter(a=>['idle','failed'].includes(S.state[a.id]));
+  const mb = runnable.reduce((s,a)=>s+a.mb,0);
+  const proxySel = sel.some(a=>a.cat==='proxy');
+
+  if (S.run){
+    const j = S.job, pct = j.total ? Math.round(j.done/j.total*100) : 0;
+    bar.innerHTML =
+      '<div class="cb-l"><b>'+j.done+' / '+j.total+'</b><span>已完成</span></div>'+
+      '<div class="cb-o" style="align-items:center">'+
+        '<div class="track" style="width:auto;flex:1"><i style="width:'+pct+'%"></i></div>'+
+      '</div>'+
+      '<div class="cb-r">'+
+        '<div class="running">3 并发 · <b>'+pct+'%</b>'+(j.manual?' · 降级 '+j.manual:'')+(j.fail?' · 失败 '+j.fail:'')+'</div>'+
+        '<button class="btn-g" data-act="cancel">取消剩余</button>'+
+      '</div>';
+    return;
+  }
+  bar.innerHTML =
+    '<div class="cb-l"><b>'+(runnable.length||0)+'</b><span>项待执行 · 约 '+sizeText(mb)+'</span>'+
+      (sel.length?'<button class="clr" data-act="clear">清除</button>':'')+'</div>'+
+    '<div class="cb-o">'+
+      '<button class="opt'+(S.opts.shortcut?' on':'')+'" data-act="optset" data-id="shortcut"><i></i>创建快捷方式</button>'+
+      '<button class="opt'+(S.opts.autostart?' on':'')+'" data-act="optset" data-id="autostart"><i></i>开机启动</button>'+
+      (proxySel?'<button class="opt'+(S.opts.proxy?' on':'')+'" data-act="optset" data-id="proxy"><i></i>代理加速</button>':'')+
+    '</div>'+
+    '<div class="cb-r">'+
+      '<button class="btn-g" data-act="log">'+svg('info',14)+'日志<span style="font-family:var(--mono);color:var(--ink-4);margin-left:2px">'+S.logs.length+'</span></button>'+
+      '<button class="btn-p" data-act="install"'+(runnable.length?'':' disabled')+'>'+svg('play')+'开始安装'+(runnable.length?'（'+runnable.length+'）':'')+'</button>'+
+    '</div>';
+}
+
+/* ============================================================
+   日志抽屉
+   ============================================================ */
+const LV = { info:'var(--info)', ok:'var(--ok)', warn:'var(--warn)', err:'var(--err)' };
+function renderDrawer(){
+  const d = $('#drawer');
+  d.classList.toggle('on', S.logOpen);
+  $('#scrim').classList.toggle('on', S.logOpen);
+  if (!S.logOpen) return;
+  const map = { info:'信息', warn:'警告', err:'错误' };
+  $('#dfilters').innerHTML = [['all','全部'],['info','信息'],['warn','警告'],['err','错误']].map(f=>
+    '<button class="chip'+(S.logF===f[0]?' on':'')+'" data-act="logfilter" data-id="'+f[0]+'">'+f[1]+
+    '<b>'+(f[0]==='all'?S.logs.length:S.logs.filter(l=>l.level===f[0]).length)+'</b></button>').join('');
+  const list = S.logs.filter(l => S.logF==='all' || l.level===S.logF);
+  $('#dsub').textContent = list.length + ' / ' + S.logs.length + ' 条记录';
+  $('#dlist').innerHTML = list.length ? list.map(l =>
+    '<div class="ln'+(l.level!=='info'?(' '+l.level):'')+'">'+
+      '<div class="lh"><span class="lt">'+l.t+'</span><span class="lm">'+esc(l.mod)+'</span>'+
+      '<i class="ll" style="background:'+LV[l.level]+'"></i></div><p>'+esc(l.msg)+'</p></div>').join('')
+    : '<div style="padding:40px 0;text-align:center;color:var(--ink-4);font-size:12.5px">暂无记录</div>';
+  $('#dlist').scrollTop = $('#dlist').scrollHeight;
+}
+
+/* ============================================================
+   弹层
+   ============================================================ */
+function renderModal(){
+  const m = $('#modal'), b = $('#mbox');
+  if (!S.dlg){ m.classList.remove('on'); return }
+  const k = S.dlg.kind;
+  if (k==='confirm'){
+    b.innerHTML = '<h3>'+esc(S.dlg.title)+'</h3>'+
+      '<p class="mp">'+esc(S.dlg.msg)+'</p>'+
+      '<div class="mlist">'+ (S.dlg.risks||[]).map(r=>'<div>'+svg('warn')+'<span>'+esc(r)+'</span></div>').join('') +'</div>'+
+      '<div class="mact"><button class="btn-g" data-act="dlgclose">取消</button>'+
+      '<button class="btn-p" data-act="dlgok">'+svg('check')+'确认执行</button></div>';
+  } else if (k==='cookie'){
+    b.innerHTML = '<h3>配置彼岸图网 Cookie</h3>'+
+      '<p class="mp">原图下载需要彼岸图网（pic.netbian.com）登录账号：在浏览器登录后打开开发者工具 → Network → 任意请求 → 复制请求头里的 <b style="color:var(--ink)">Cookie</b> 字段，粘贴到下面。</p>'+
+      '<div style="margin:16px 0"><textarea placeholder="粘贴 Cookie 字符串…" spellcheck="false"></textarea></div>'+
+      '<p class="mp" style="font-size:11.5px;color:var(--ink-4)">仅保存在本机配置文件，用于向彼岸图网发起带登录态的请求。</p>'+
+      '<div class="mact"><button class="btn-g" data-act="dlgclose">取消</button>'+
+      '<button class="btn-p" data-act="dlgok">'+svg('check')+'保存并验证</button></div>';
+  } else if (k==='onboard'){
+    b.innerHTML = '<h3>开始之前</h3>'+
+      '<p class="mp">这个工具把「新机开机到可用环境」压成一次勾选。</p>'+
+      '<div class="mlist">'+
+        '<div>'+svg('info')+'<span><b style="color:var(--ink)">勾选即执行</b>：解析 → 下载 → 静默安装 → 校验，3 并发跑完，中途可退出页面。</span></div>'+
+        '<div>'+svg('warn')+'<span><b style="color:var(--ink)">系统级操作先确认</b>：写注册表、重启资源管理器的工具都会二次确认，且都提供还原入口。</span></div>'+
+        '<div>'+svg('info')+'<span><b style="color:var(--ink)">失败会降级</b>：官网无静默参数的条目自动转浏览器辅助安装，卡片标记「需人工」。</span></div>'+
+      '</div>'+
+      '<div class="mact"><button class="btn-p" data-act="dlgclose">'+svg('check')+'开始使用</button></div>';
+  }
+  m.classList.add('on');
+}
+
+/* ============================================================
+   执行引擎（3 并发）
+   ============================================================ */
+function outcome(a, single){
+  if (a.manual && !single) return 'manual';
+  if (a.degrade==='wizard' && !single) return 'manual';
+  if (a.id==='vlc' && !S.vlcRetried){ S.vlcRetried = true; return 'failed' }
+  return 'done';
+}
+function job(a, single){
+  return new Promise(res=>{
+    const set=(st,p)=>{ S.state[a.id]=st; if(p!==undefined) S.prog[a.id]=p; patchCard(a.id) };
+    log('info', a.cat, '解析下载地址：'+a.name+'（'+a.src+'）');
+    setTimeout(()=>{
+      if (S.cancel){ set('idle',0); return res() }
+      S.state[a.id]='downloading'; S.prog[a.id]=0; patchCard(a.id);
+      log('info', a.cat, '下载 '+a.name+' · '+sizeText(a.mb)+' → AppData\\Local\\kaiji\\cache');
+      const steps = a.mb>150 ? 28 : a.mb>60 ? 20 : 13;
+      let i = 0;
+      const tick = ()=>{
+        if (S.cancel){ set('idle',0); log('warn', a.cat, a.name+' 已取消'); return res() }
+        i++; const p = Math.min(100, Math.round(i/steps*100));
+        S.prog[a.id]=p; patchProg(a.id);
+        if (p < 100) return setTimeout(tick, 70+Math.random()*80);
+        set('installing', null);
+        log('info', a.cat, '静默安装 '+a.name+(a.degrade==='wizard'?'（尝试 /S 静默参数）':''));
+        setTimeout(()=>{
+          set('verifying', null);
+          log('info', a.cat, '校验安装结果 · '+a.name);
+          setTimeout(()=>{
+            const out = outcome(a, single);
+            S.state[a.id]=out; S.prog[a.id]=100; patchCard(a.id);
+            if (out==='done'){ S.job.done++; log('ok', a.cat, '完成 '+a.name+' · '+sizeText(a.mb)+(single&&(a.manual||a.degrade==='wizard')?' · 人工步骤校验通过':'')) }
+            else if (out==='manual'){ S.job.manual++; log('warn', a.cat, a.name+' 降级为人工：'+(a.manual||'安装向导不支持静默参数，已打开官网下载页，请按提示完成')) }
+            else { S.job.fail++; log('err', a.cat, a.name+' 失败：下载源 302 跳转后连接被重置 · 可点卡片右下角重试') }
+            paintBar(); res();
+          }, 420);
+        }, 860);
+      };
+      setTimeout(tick, 120);
+    }, 520);
+  });
+}
+async function runSelected(){
+  const ids = APPS.filter(a=>S.sel.has(a.id) && ['idle','failed'].includes(S.state[a.id])).map(a=>a.id);
+  if (!ids.length) return toast('没有可执行的项目（已装的无需重复安装）','warn');
+  const proxySel = APPS.filter(a=>S.sel.has(a.id)).some(a=>a.cat==='proxy');
+  S.run = true; S.cancel = false; S.job = { total:ids.length, done:0, manual:0, fail:0 };
+  log('info','core','开始批量部署：'+ids.length+' 个条目 · 3 并发'+
+    (S.opts.shortcut?' · 创建快捷方式':'')+(S.opts.autostart?' · 开机启动':'')+((S.opts.proxy&&proxySel)?' · 代理加速':''));
+  if (S.opts.shortcut) log('info','core','快捷方式将创建到桌面；已存在的跳过');
+  syncTop(); paintBar();
+  ids.forEach(id=>{ S.state[id]='checking'; S.prog[id]=0; patchCard(id) });
+  let idx = 0;
+  const workers = [0,1,2].map(async ()=>{
+    while (true){
+      if (S.cancel || idx >= ids.length) return;
+      const id = ids[idx++];
+      const a = APPS.find(x=>x.id===id);
+      if (!a) continue;
+      await job(a, false);
+    }
+  });
+  await Promise.all(workers);
+  S.run = false; S.cancel = false;
+  syncTop(); paintBar();
+  const j = S.job;
+  log(j.fail? 'warn':'ok', 'core', '批量部署结束：成功 '+j.done+' · 需人工 '+j.manual+' · 失败 '+j.fail);
+  toast('部署结束：成功 '+j.done+' 项'+(j.manual?' · 需人工 '+j.manual:'')+(j.fail?' · 失败 '+j.fail:''), j.fail?'warn':'ok');
+}
+async function singleRun(id){
+  if (S.run) return toast('批量任务进行中，请等本轮结束','warn');
+  const a = APPS.find(x=>x.id===id);
+  if (!a) return;
+  log('info', a.cat, '单独执行：'+a.name);
+  S.run = true; S.cancel = false; S.job = { total:1, done:0, manual:0, fail:0 };
+  syncTop(); paintBar();
+  await job(a, true);
+  S.run = false;
+  syncTop(); paintBar();
+  toast(a.name+'：'+({done:'已完成',manual:'仍需人工',failed:'失败，可重试'}[S.state[a.id]]), S.state[a.id]==='done'?'ok':'warn');
+}
+function toggleSel(id){
+  if (S.state[id]) { /* 已装/需人工 也可勾选重装 */ }
+  if (S.sel.has(id)) S.sel.delete(id); else S.sel.add(id);
+  const el = cardOf(id);
+  if (el) el.classList.toggle('on', S.sel.has(id));
+  paintBar();
+}
+function selectAllPage(){
+  const scope = ['devenv','daily','proxy'].includes(S.page) ? catApps(S.page) : null;
+  if (!scope) return toast('当前页面没有可勾选的条目','warn');
+  const allOn = scope.every(a=>S.sel.has(a.id));
+  scope.forEach(a=>{ allOn ? S.sel.delete(a.id) : S.sel.add(a.id); const el=cardOf(a.id); if (el) el.classList.toggle('on', !allOn) });
+  toast(allOn ? '已取消本页全选' : '已全选本页 '+scope.length+' 项','sig');
+  paintBar();
+}
+
+/* ============================================================
+   交互
+   ============================================================ */
+function go(id){
+  S.page = id; S.f = 'all'; S.q = ''; S.wallAll = false;
+  $('#searchInput').value = '';
+  renderRail(); renderView(); paintBar(); syncTop();
+  $('#view').scrollTop = 0;
+}
+function doAct(act, id, el){
+  switch(act){
+    case 'nav': go(id); break;
+    case 'filter': S.f = id; renderView(); break;
+    case 'sel': toggleSel(id); break;
+    case 'only': singleRun(id); break;
+    case 'optset':
+      S.opts[id] = !S.opts[id];
+      toast({ shortcut:'创建快捷方式', autostart:'开机启动', proxy:'代理加速' }[id]+'：'+(S.opts[id]?'已开启':'已关闭'), 'sig');
+      paintBar(); break;
+    case 'install': runSelected(); break;
+    case 'cancel': S.cancel = true; log('warn','core','已请求取消：当前轮结束后停止'); paintBar(); break;
+    case 'clear':
+      S.sel.clear();
+      document.querySelectorAll('.card.on').forEach(e=>e.classList.remove('on'));
+      toast('已清空勾选','info'); paintBar(); break;
+    case 'log': S.logOpen = true; renderDrawer(); break;
+    case 'logclose': S.logOpen = false; renderDrawer(); break;
+    case 'logclear': S.logs = []; renderDrawer(); syncTop(); paintBar(); break;
+    case 'logfilter': S.logF = id; renderDrawer(); break;
+    case 'dlgclose': S.dlg = null; renderModal(); break;
+    case 'dlgok':
+      if (S.dlg && S.dlg.kind === 'cookie'){ S.cookieOk = true; log('ok','wallpaper','彼岸图网 Cookie 已保存并验证通过'); toast('Cookie 已保存','ok') }
+      else if (S.dlg && S.dlg.kind === 'confirm'){ log('warn','tools', S.dlg.title+' 已执行'); toast(S.dlg.title+'：执行完成','ok') }
+      S.dlg = null; renderModal(); break;
+    case 'tool': {
+      const t = TOOLS.find(x=>x.id===id);
+      if (t.risk){
+        log('warn','tools','请求 '+t.name+'，等待二次确认');
+        S.dlg = { kind:'confirm', title:t.name, msg:t.confirm||t.desc, risks:['会写入注册表 / 重启资源管理器，桌面可能短暂闪烁','执行前建议关闭正在运行的文件资源管理器窗口'] };
+        renderModal();
+      } else { log('ok','tools', t.name+' 执行完成 · '+t.desc); toast(t.name+'：完成','ok') }
+      break; }
+    case 'edgesw':
+      S.edge[id] = !S.edge[id];
+      if (el) el.classList.toggle('on', S.edge[id]);
+      log('info','browser', { fav:'导入收藏夹', dark:'深色外观', dldesk:'下载位置改为桌面' }[id]+'：'+(S.edge[id]?'开启':'关闭'));
+      break;
+    case 'applyedge':
+      log('info','browser','已备份 Edge Preferences 与收藏夹文件');
+      log('ok','browser','浏览器定制写入完成 · 共 3 项');
+      toast('已应用 3 项定制（写前已备份）','ok'); break;
+    case 'walltab': S.wallTab = id; S.wallPage = 1; renderView(); break;
+    case 'wallcat': S.wallCat = Number(id); S.wallPage = 1; renderView(); break;
+    case 'wallpage':
+      if (id === 'p0') S.wallPage = Math.max(1, S.wallPage-1);
+      else if (id === 'p+') S.wallPage = Math.min(3, S.wallPage+1);
+      else S.wallPage = Number(id);
+      renderView(); $('#view').scrollTop = 0; break;
+    case 'wallall': S.wallAll = !S.wallAll; renderView(); break;
+    case 'wallset': {
+      const label = id;
+      if (S.wallTab === 'local'){
+        log('info','wallpaper','应用本机素材：'+label);
+        toast('已设为桌面壁纸：'+wallName(label),'ok');
+      } else if (S.wallTab === 'online'){
+        if (!S.cookieOk){
+          log('warn','wallpaper','未配置彼岸图网 Cookie，无法下载原图：'+label);
+          toast('请先配置彼岸图网 Cookie','warn');
+          S.dlg = { kind:'cookie' }; renderModal();
+        } else {
+          log('ok','wallpaper','下载原图 3840x2160 并设为壁纸：'+label);
+          toast('已设为桌面壁纸：'+label,'ok');
+        }
+      } else {
+        log('ok','wallpaper','经应用内代理下载并设置壁纸：wallhaven-'+label);
+        toast('已设为桌面壁纸：'+label,'ok');
+      }
+      break; }
+    case 'cookie': S.dlg = { kind:'cookie' }; renderModal(); break;
+  }
+}
+document.addEventListener('click', (e)=>{
+  const a = e.target.closest('[data-act]');
+  if (a){ doAct(a.dataset.act, a.dataset.id, a); return }
+  const c = e.target.closest('[data-card]');
+  if (c) toggleSel(c.dataset.card);
+});
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Escape'){
+    if (S.dlg){ S.dlg = null; renderModal(); return }
+    if (S.logOpen){ S.logOpen = false; renderDrawer(); return }
+  }
+  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 'a'){
+    if (['devenv','daily','proxy'].includes(S.page)){ e.preventDefault(); selectAllPage() }
+  }
+});
+$('#searchInput').addEventListener('input', (e)=>{
+  S.q = e.target.value.trim();
+  if (SEARCHABLE.includes(S.page)) renderView();
+});
+$('#scrim').addEventListener('click', ()=>{ S.logOpen = false; renderDrawer() });
+
+/* ============================================================
+   启动
+   ============================================================ */
+renderRail(); renderView(); paintBar(); syncTop();
+log('ok','core','系统信息采集完成：Windows 11 23H2 · 12 核 20 线程 · 32 GB');
+log('info','core','软硬件清单加载：29 个软件模块 + 9 个系统工具');
+log('ok','core','下载源核查：29 个条目全部可达（0 个失效）');
+log('warn','daily','比特浏览器官网强制图形验证码，届时需人工完成');
+log('err','daily','VLC 播放器 下载源 302 跳转后中断，可重试');
+renderDrawer(); syncTop(); paintBar();
+S.dlg = { kind:'onboard' }; renderModal();
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# ---- 依赖 ----
+node_modules/
+
+# ---- 构建产物（体积大，不入库）----
+out/
+release/
+dist/
+kdbuild/
+dist-out*/
+
+# ---- 临时文件 ----
+*.log
+logs/
+electron.vite.config.*.mjs
+
+# ---- 误建目录（环境变量未展开）----
+%SystemDrive%/
+
+# ---- 系统 ----
+.DS_Store
+Thumbs.db
+desktop.ini
